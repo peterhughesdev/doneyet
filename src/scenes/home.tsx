@@ -1,69 +1,83 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import React, { useState } from 'react';
+import { StyleSheet, Slider, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Icon, Button, Divider, Layout, Modal } from '@ui-kitten/components';
-import CircularSlider from 'react-native-circular-slider';
+
+import { Notifications } from 'expo';
 import * as Time from '../util/time';
 
-
-/**
- * Use any valid `name` property from eva icons (e.g `github`, or `heart-outline`)
- * https://akveo.github.io/eva-icons
- */
-const PlusIcon = (style) => (
-    <Icon {...style} name='plus' />
-);
-
 export const HomeScreen = () => {
-    const [timerSpan, setTimerSpan] = React.useState(0);
+    const [timerLength, setTimerLength] = useState<number>(0);
+    const [timerActive, setTimerActive] = useState<boolean>(false);
+    const [timerID, setTimerID] = useState<number>(0);
 
-    const [startAngle, setStartAngle] = React.useState(0);
-    const [angleLength, setAngleLength] = React.useState(0.4);
+    const startTimer = async () => {
+        const seconds = Math.round(timerLength);
 
-    const updateAngle = ({ startAngle, angleLength }) => {
-        setAngleLength(angleLength);
-        setTimerSpan(Time.calculateSecondsFromAngle(angleLength));
-    };
+        const notification = {
+            title: "Time's up!",
+            body: `${seconds} seconds has elapsed`,
+            ios: {
+                sound: true,
+                _displayInForeground: true
+            }
+        };
 
-    const [activeTimer, setActiveTimer] = React.useState(undefined);
+        
+        Notifications.scheduleNotificationWithCalendarAsync(notification, {
+            second: seconds,
+            repeat: true
+        });
 
-    const startTimer = () => {
-        // setInterval(() => {
-        //     setTimerSpan(timerSpan - 100);
-        //     setAngleLength(Time.calculateAngleFromSeconds(timerSpan - 100));
-        // }, 1000);
+        // Notifications.scheduleNotificationWithTimerAsync(notification, {
+        //     interval: (seconds * 1000),
+        //     repeat: true
+        // });
+
+        setTimerActive(true);
     }
 
-    const endtime = Time.calculateTimeFromAngle(angleLength % (2 * Math.PI));
+    const stopTimer = async () => {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        setTimerActive(false);
+    }
+
+    const seconds = Math.round(timerLength);
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <Layout style={styles.container}>
-                <Text style={styles.text} category='h1'>
-                    Welcome to TimeFlow
-          </Text>
-                <Text style={styles.text} appearance='hint'>
-                    Time: {Time.formatTime(endtime)}
+        <Layout style={styles.container}>
+
+            <Text style={styles.text} category='h1'>
+                Welcome to DoneYet
+            </Text>
+
+            <Layout  style={styles.modalContainer}>
+                <Text style={styles.text} category='s1'>
+                    Timer: {seconds} seconds
                 </Text>
+
                 <Divider />
 
-                <CircularSlider
-                    startAngle={startAngle}
-                    angleLength={angleLength}
-                    onUpdate={updateAngle}
-                    segments={5}
-                    strokeWidth={20}
-                    radius={115}
-                    gradientColorFrom="#ff9800"
-                    gradientColorTo="#ffcf00"
-                    clockFaceColor="#9d9d9d"
-                    bgCircleColor="#171717"
+                <Slider
+                    style={{ width: 200, height: 40 }}
+                    minimumValue={0}
+                    maximumValue={60}
+                    minimumTrackTintColor="#FFFFFF"
+                    maximumTrackTintColor="#000000"
+                    onValueChange={setTimerLength}
                 />
 
+                { timerActive ? 
+                    (<Button style={styles.likeButton} appearance='filled' status='danger' onPress={stopTimer}>Stop timer</Button>) :
+                    (<Button style={styles.likeButton} appearance='filled' status='info' onPress={startTimer}>Start timer</Button>)
+                }
+                
                 <Divider />
-                <Button style={styles.likeButton} appearance='outline' status='basic' onPress={startTimer}>Start timer</Button>
+
+                
             </Layout>
-        </SafeAreaView>
+            
+        </Layout>
     );
 };
 
