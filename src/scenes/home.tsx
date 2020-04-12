@@ -1,82 +1,124 @@
-import React, { useState } from 'react';
-import { StyleSheet, Slider, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, Icon, Button, Divider, Layout, Modal } from '@ui-kitten/components';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Picker, StatusBar } from 'react-native';
+import { Text, Icon, Button, Divider, Layout, Modal, Card, Spinner } from '@ui-kitten/components';
 
 import { Notifications } from 'expo';
-import * as Time from '../util/time';
+import { scheduleNotification} from '../util/notifications';
+import *  as Permissions from '../util/permissions';
+  
+
+const NULL_REG = {
+    remove: () => {}
+};
+
+type Registration = {
+    remove: Function
+}
+
+type IntervalSequence = {
+    once: number[],
+    repeat: number[]
+}
+
+const INTERVAL_SEQUENCES = new Map<number, IntervalSequence>();
+
+INTERVAL_SEQUENCES.set(5, {
+    once: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+    repeat: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115]
+});
+
+INTERVAL_SEQUENCES.set(20, {
+    once: [20, 40],
+    repeat: [60, 80, 100]
+});
+
+INTERVAL_SEQUENCES.set(30, {
+    once: [30],
+    repeat: [60, 90]
+});
+
+INTERVAL_SEQUENCES.set(40, {
+    once: [40],
+    repeat: [80, 120]
+});
 
 export const HomeScreen = () => {
-    const [timerLength, setTimerLength] = useState<number>(0);
+    const [seconds, setSeconds] = useState<number>(20);
     const [timerActive, setTimerActive] = useState<boolean>(false);
-    const [timerID, setTimerID] = useState<number>(0);
 
     const startTimer = async () => {
-        const seconds = Math.round(timerLength);
+        Permissions.registerForUserFacingNotificationsAsync();
+        Permissions.registerForPushNotificationsAsync();
 
-        const notification = {
-            title: "Time's up!",
-            body: `${seconds} seconds has elapsed`,
-            ios: {
-                sound: true,
-                _displayInForeground: true
-            }
-        };
+        const intervals: IntervalSequence | undefined = INTERVAL_SEQUENCES.get(seconds);
 
-        
-        Notifications.scheduleNotificationWithCalendarAsync(notification, {
-            second: seconds,
-            repeat: true
+        const title = "Time's up!";
+        const body = `${seconds} has elapsed`;
+
+        intervals!.once.forEach(time => {
+            scheduleNotification(time, false, title, body);
         });
 
-        // Notifications.scheduleNotificationWithTimerAsync(notification, {
-        //     interval: (seconds * 1000),
-        //     repeat: true
-        // });
+        intervals!.repeat.forEach(time => {
+            scheduleNotification(time, true, title, body);
+        });
 
         setTimerActive(true);
     }
 
     const stopTimer = async () => {
         await Notifications.cancelAllScheduledNotificationsAsync();
+
         setTimerActive(false);
     }
 
-    const seconds = Math.round(timerLength);
+    const Header = () => (
+        <View>
+          <Text category='h5'>Timer started</Text>
+        </View>
+    );
 
     return (
         <Layout style={styles.container}>
+            <Layout style={styles.header}>
+                <Text style={styles.text} category='h1'>Done Yet?</Text>
+                <Text>Designed by Peter, made for Jasmine</Text>
+            </Layout>
 
-            <Text style={styles.text} category='h1'>
-                Welcome to DoneYet
-            </Text>
+            <Layout style={styles.layout}>
 
-            <Layout  style={styles.modalContainer}>
-                <Text style={styles.text} category='s1'>
-                    Timer: {seconds} seconds
-                </Text>
+                <Picker
+                    style={styles.picker}
+                    itemStyle={styles.pickerItem}
+                    selectedValue={seconds}
+                    onValueChange={(value) => setSeconds(value)}>
+                        <Picker.Item label="5s" value={5} />
+                        <Picker.Item label="20s" value={20} />
+                        <Picker.Item label="30s" value={30} />
+                        <Picker.Item label="40s" value={40} />
+                </Picker>
 
-                <Divider />
+            
+                <Modal 
+                    visible={timerActive}
+                    backdropStyle={styles.backdrop}>
 
-                <Slider
-                    style={{ width: 200, height: 40 }}
-                    minimumValue={0}
-                    maximumValue={60}
-                    minimumTrackTintColor="#FFFFFF"
-                    maximumTrackTintColor="#000000"
-                    onValueChange={setTimerLength}
-                />
+                    <Card style={styles.card} disabled={true} status='success' header={Header}>
+                        <Text>{`Sending alerts on a ${seconds} second interval`}</Text>
+                        <Layout style={styles.spinner}>
+                            <Spinner size="large" status='success'/>
+                        </Layout>
+                        <Button style={styles.likeButton} appearance='filled' status='danger' onPress={stopTimer}>Stop timer</Button>
+                    </Card>
+                </Modal>
+            </Layout>
 
+            <Layout style={styles.layout}>
                 { timerActive ? 
-                    (<Button style={styles.likeButton} appearance='filled' status='danger' onPress={stopTimer}>Stop timer</Button>) :
+                    (<Text></Text>) :
                     (<Button style={styles.likeButton} appearance='filled' status='info' onPress={startTimer}>Start timer</Button>)
                 }
-                
-                <Divider />
-
-                
             </Layout>
-            
         </Layout>
     );
 };
@@ -84,29 +126,47 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
         paddingTop: 35
     },
-    modalContainer: {
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+    layout: {
         flex: 1,
-        width: 256,
-        padding: 16,
-        borderRadius: 4
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    footerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end'
+    header: {
+        marginTop: 50
     },
-    footerControl: {
-        marginHorizontal: 4
+    spinner: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 15,
+        marginBottom: 15
+    },
+    picker: {
+        height: 50, 
+        width: 150
+    },
+    pickerItem: {
+        color: 'white'
+    },
+    card: {
+        flex: 1,
+        margin: 2,
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     text: {
         textAlign: 'center',
     },
     likeButton: {
         marginVertical: 16,
-    }
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
 });
