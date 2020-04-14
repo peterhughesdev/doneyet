@@ -1,75 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Picker, StatusBar } from 'react-native';
-import { Text, Icon, Button, Divider, Layout, Modal, Card, Spinner } from '@ui-kitten/components';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Picker } from 'react-native';
+import { Text, Button, Divider, Layout, Modal, Card, Spinner } from '@ui-kitten/components';
+
+import DropdownAlert from 'react-native-dropdownalert';
+import { SafeAreaLayout } from '../components/safe-area-layout';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Notifications } from 'expo';
 import { scheduleNotification} from '../util/notifications';
 import *  as Permissions from '../util/permissions';
-  
 
-const NULL_REG = {
-    remove: () => {}
-};
+import { getTimeoutsForInterval, getRepeatingTimeoutsForInterval } from '../util/sequences';
+import { usePersistedState } from '../util/persistance';
+import { createTimer, Timer } from '../util/timer';
 
-type Registration = {
-    remove: Function
-}
-
-type IntervalSequence = {
-    once: number[],
-    repeat: number[]
-}
-
-const INTERVAL_SEQUENCES = new Map<number, IntervalSequence>();
-
-INTERVAL_SEQUENCES.set(5, {
-    once: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
-    repeat: [60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115]
-});
-
-INTERVAL_SEQUENCES.set(20, {
-    once: [20, 40],
-    repeat: [60, 80, 100]
-});
-
-INTERVAL_SEQUENCES.set(30, {
-    once: [30],
-    repeat: [60, 90]
-});
-
-INTERVAL_SEQUENCES.set(40, {
-    once: [40],
-    repeat: [80, 120]
-});
+import { styles } from '../styles/app';
+import colours from '../styles/colours.json';
 
 export const HomeScreen = () => {
-    const [seconds, setSeconds] = useState<number>(20);
-    const [timerActive, setTimerActive] = useState<boolean>(false);
+    const [timers, setTimers] = usePersistedState<Timer[]>("timers", []);
+    const [timer, setTimer] = useState<Timer>(createTimer(20));
 
-    const startTimer = async () => {
-        Permissions.registerForUserFacingNotificationsAsync();
-        Permissions.registerForPushNotificationsAsync();
+    useEffect(()  => {
+        if (timer.running) {
+            (async () => {
+                await Permissions.registerForUserFacingNotificationsAsync();
 
-        const intervals: IntervalSequence | undefined = INTERVAL_SEQUENCES.get(seconds);
+                const title = "Time's up!";
+                const body = `${timer.seconds}s has elapsed`;
+        
+                getTimeoutsForInterval(timer.seconds).forEach(time => {
+                    scheduleNotification(time, false, title, body);
+                });
+        
+                getRepeatingTimeoutsForInterval(timer.seconds).forEach(time => {
+                    scheduleNotification(time, true, title, body);
+                });
+            })();
+        } else {
+            Notifications.cancelAllScheduledNotificationsAsync();
+        }
+    }, [timer]);
 
-        const title = "Time's up!";
-        const body = `${seconds} has elapsed`;
+    let dropdown: any;
 
-        intervals!.once.forEach(time => {
-            scheduleNotification(time, false, title, body);
-        });
+    const setDropdown = (ref: any) => dropdown = ref;
 
-        intervals!.repeat.forEach(time => {
-            scheduleNotification(time, true, title, body);
-        });
+    const queueTimer = () => {
+        if (dropdown) {
+            dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${timer.seconds}s to queue`);
+        }
 
-        setTimerActive(true);
+        setTimers(timers.concat(timer));
+        setTimer(createTimer(timer.seconds));
     }
 
-    const stopTimer = async () => {
-        await Notifications.cancelAllScheduledNotificationsAsync();
+    const updateTimer = (seconds: number) => {
+        setTimer({...timer, seconds: seconds});
+    }
 
-        setTimerActive(false);
+    const startTimer = () => {
+        setTimer({...timer, running: true});
+    }
+
+    const stopTimer = () => {
+        setTimer({...timer, running: false});
     }
 
     const Header = () => (
@@ -81,92 +76,50 @@ export const HomeScreen = () => {
     return (
         <Layout style={styles.container}>
             <Layout style={styles.header}>
-                <Text style={styles.text} category='h1'>Done Yet?</Text>
-                <Text>Designed by Peter, made for Jasmine</Text>
+                <Text style={styles.title}>Done Yet?</Text>
+                <Text style={styles.subtitle}>Designed by Peter, made for Jasmine</Text>
             </Layout>
 
-            <Layout style={styles.layout}>
+            <Layout style={styles.row}>
 
                 <Picker
                     style={styles.picker}
                     itemStyle={styles.pickerItem}
-                    selectedValue={seconds}
-                    onValueChange={(value) => setSeconds(value)}>
+                    selectedValue={timer.seconds}
+                    onValueChange={updateTimer}>
                         <Picker.Item label="5s" value={5} />
                         <Picker.Item label="20s" value={20} />
                         <Picker.Item label="30s" value={30} />
                         <Picker.Item label="40s" value={40} />
+                        <Picker.Item label="60s" value={60} />
                 </Picker>
 
             
                 <Modal 
-                    visible={timerActive}
+                    visible={timer.running}
                     backdropStyle={styles.backdrop}>
 
                     <Card style={styles.card} disabled={true} status='success' header={Header}>
-                        <Text>{`Sending alerts on a ${seconds} second interval`}</Text>
+                        <Text>{`Sending alerts on a ${timer.seconds} second interval`}</Text>
                         <Layout style={styles.spinner}>
                             <Spinner size="large" status='success'/>
                         </Layout>
-                        <Button style={styles.likeButton} appearance='filled' status='danger' onPress={stopTimer}>Stop timer</Button>
+
+                        <Button appearance='filled' status='danger' onPress={stopTimer}>Stop timer</Button>
                     </Card>
                 </Modal>
             </Layout>
 
-            <Layout style={styles.layout}>
-                { timerActive ? 
+            <Layout style={styles.row}>
+                { timer.running ? 
                     (<Text></Text>) :
-                    (<Button style={styles.likeButton} appearance='filled' status='info' onPress={startTimer}>Start timer</Button>)
+                    (<Button style={styles.startButton} appearance='filled' status='info' onPress={startTimer}>Start timer</Button>)
                 }
+
+                <Button style={styles.queueButton} textStyle={{color: colours.paleBright}} appearance='outline' onPress={queueTimer}>Add to queue</Button>
             </Layout>
+
+            <DropdownAlert ref={setDropdown} infoColor={colours.active} />
         </Layout>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        paddingTop: 35
-    },
-    layout: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    header: {
-        marginTop: 50
-    },
-    spinner: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 15,
-        marginBottom: 15
-    },
-    picker: {
-        height: 50, 
-        width: 150
-    },
-    pickerItem: {
-        color: 'white'
-    },
-    card: {
-        flex: 1,
-        margin: 2,
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        textAlign: 'center',
-    },
-    likeButton: {
-        marginVertical: 16,
-    },
-    backdrop: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-});

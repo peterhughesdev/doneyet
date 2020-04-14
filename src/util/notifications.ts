@@ -13,7 +13,7 @@ export const scheduleNotification = async (seconds: number, repeat: boolean, tit
         }
     };
 
-    Notifications.scheduleNotificationWithTimerAsync(notification, {
+    return Notifications.scheduleNotificationWithTimerAsync(notification, {
         interval: seconds * 1000,
         repeat: repeat
     });
