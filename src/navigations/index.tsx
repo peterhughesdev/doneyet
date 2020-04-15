@@ -1,29 +1,40 @@
 import React from 'react';
 
-import { View } from 'react-native';
-
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { HomeScreen } from '../scenes/home';
 import { TimersScreen } from '../scenes/timers';
 
-const Tab = createMaterialTopTabNavigator();
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import colours from '../styles/colours.json';
+
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const TabBar = () => {
-    return (
-        <View style={{ flexDirection: 'row' }} />
-    );
+const tabBarOptions = {
+    activeTintColor: colours.background,
+    inactiveTintColor: colours.background,
+    style: {
+        backgroundColor: colours.accent
+    }
 }
 
 function Root() {
     return (
-      <Tab.Navigator tabBar={props => <TabBar />}>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Timers" component={TimersScreen} />
+      <Tab.Navigator tabBarOptions={tabBarOptions}>
+        <Tab.Screen name="Home" component={HomeScreen} options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign name={focused ? 'clockcircle' : 'clockcircleo'} size={size} color={color} />
+          ),
+        }}/>
+        <Tab.Screen name="Queue" component={TimersScreen} options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'ios-list-box' : 'ios-list'} size={size} color={color} />
+          ),
+        }}/>
       </Tab.Navigator>
     );
 }
