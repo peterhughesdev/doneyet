@@ -20,10 +20,15 @@ const JsListItem: any = ListItem;
 const JsList: any = List;
 /* tslint:enable */
 
+import { useDispatch, useSelector } from 'react-redux'
+import { clearQueue as emptyQueue, removeTimer, scheduleTimer } from '../store/actions'
+import { RootState } from '../store';
 
 export const TimersScreen = () => {
     const [isScheduled, setScheduled] = usePersistedState<boolean>("scheduled", false);
-    const [timers, setTimers] = usePersistedState<Timer[]>("timers", []);
+
+    const timers = useSelector((state: RootState) => state.queue.timers);
+    const dispatch = useDispatch();
 
     const startTimers = async () => {
         Permissions.registerForUserFacingNotificationsAsync();
@@ -35,11 +40,10 @@ export const TimersScreen = () => {
 
             const id = await scheduleNotification(accumulated, false, "Time's up!", `${timers[i].seconds}s has elapsed`);
 
-            timers[i].scheduled = id;
+            dispatch(scheduleTimer(timers[i].id, id));
         }
 
         setScheduled(true);
-        setTimers(timers);
 
         setTimeout(() => {
             setScheduled(false);
@@ -52,10 +56,7 @@ export const TimersScreen = () => {
     }
 
     const deleteTimer = async (timer: Timer) => {
-        const proxy = timers.concat([]);
-        const idx = proxy.findIndex(item => item.id === timer.id);
-        
-        proxy.splice(idx, 1);
+        dispatch(removeTimer(timer.id));
 
         if (timer.scheduled) {
             try {
@@ -64,13 +65,11 @@ export const TimersScreen = () => {
                 // no-op
             }
         }
-
-        setTimers(proxy);
     }
 
     const clearQueue = () => {
+        dispatch(emptyQueue());
         stopTimers();
-        setTimers([]);
     }
 
     const renderItemIcon = (item: Timer) => (

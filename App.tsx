@@ -9,6 +9,10 @@ import { default as myTheme } from './src/themes/index.json';
 
 const theme = darkTheme;
 
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react'
+import { store, persistor } from './src/store';
+
 export default function App() {
   StatusBar.setBarStyle('light-content');
 
@@ -16,7 +20,11 @@ export default function App() {
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider mapping={mapping} theme={theme}>
-        <AppContainer />
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AppContainer />
+          </PersistGate>
+        </Provider>
       </ApplicationProvider>
     </>
   );

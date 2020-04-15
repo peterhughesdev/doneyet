@@ -17,9 +17,12 @@ import { createTimer, Timer } from '../util/timer';
 import { styles } from '../styles/app';
 import colours from '../styles/colours.json';
 
+import { useDispatch } from 'react-redux'
+import { addTimer } from '../store/actions'
+
 export const HomeScreen = () => {
-    const [timers, setTimers] = usePersistedState<Timer[]>("timers", []);
     const [timer, setTimer] = useState<Timer>(createTimer(20));
+    const dispatch = useDispatch();
 
     useEffect(()  => {
         if (timer.running) {
@@ -51,7 +54,8 @@ export const HomeScreen = () => {
             dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${timer.seconds}s to queue`);
         }
 
-        setTimers(timers.concat(timer));
+        dispatch(addTimer(timer));
+        
         setTimer(createTimer(timer.seconds));
     }
 
