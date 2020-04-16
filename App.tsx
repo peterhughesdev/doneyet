@@ -11,15 +11,23 @@ const theme = darkTheme;
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
+import { stopTimer } from './src/store/actions';
 import { store, persistor } from './src/store';
+
+import { establishNotifications, cancelAllNotifications } from './src/util/notifications';
 
 export default function App() {
   StatusBar.setBarStyle('light-content');
 
+  establishNotifications(() => {
+    cancelAllNotifications();
+    store.dispatch(stopTimer());
+  });
+
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider mapping={mapping} theme={theme}>
+      <ApplicationProvider mapping={mapping} theme={{...theme, ...myTheme}}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <AppContainer />

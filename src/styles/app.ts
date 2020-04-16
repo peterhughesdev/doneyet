@@ -9,17 +9,20 @@ export const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingTop: 35
+        paddingTop: 35,
+        backgroundColor:  colours.background
     },
     row: {
         flex: 1,
         justifyContent: 'space-evenly',
         alignItems: 'stretch',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor:  colours.background
     },
     header: {
         marginTop: 50,
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        backgroundColor:  colours.background
     },
     spinner: {
         justifyContent: 'center',
@@ -68,31 +71,55 @@ export const styles = StyleSheet.create({
     actionButton: {
         marginLeft: 15,
         marginRight: 15,
-        marginVertical: 30
+        marginVertical: 30,
+        
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 2
     },
     startButton: {
         height: 50,
         marginLeft: 15,
         marginRight: 15,
         backgroundColor: colours.active,
-        borderColor: colours.active
+        borderColor: colours.active,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 2
     },
     queueButton: {
         height: 50,
         marginLeft: 15,
         marginRight: 15,
         borderColor: colours.active,
-        backgroundColor: 'rgba(0,0,0,0)'
+        backgroundColor:  colours.background
+    },
+    clearQueueButton: {
+        height: 50,
+        marginLeft: 15,
+        marginRight: 15,
+        borderColor: colours.active,
+        backgroundColor:  colours.background
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    listContainer: {
-        flexDirection: 'row'
+    queue: {
+        backgroundColor: colours.background
+    },
+    queueItem:  {
+        backgroundColor: colours.background,
+        fontSize: 20
+    },
+    queueItemText:  {
+        fontSize: 40
     },
     listButton: {
         color: colours.active,
         marginLeft: 18,
         fontSize: 20
+    },
+    background: {
+        backgroundColor:  colours.background
     }
 });

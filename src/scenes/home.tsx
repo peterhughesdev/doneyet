@@ -1,50 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Picker } from 'react-native';
-import { Text, Button, Divider, Layout, Modal, Card, Spinner } from '@ui-kitten/components';
+import { Text, Button, Layout, Modal, Card, Spinner } from '@ui-kitten/components';
 
 import DropdownAlert from 'react-native-dropdownalert';
-import { SafeAreaLayout } from '../components/safe-area-layout';
-import { LinearGradient } from 'expo-linear-gradient';
 
-import { Notifications } from 'expo';
-import { scheduleNotification} from '../util/notifications';
-import *  as Permissions from '../util/permissions';
+import { scheduleNotification, cancelAllNotifications } from '../util/notifications';
 
 import { getTimeoutsForInterval, getRepeatingTimeoutsForInterval } from '../util/sequences';
-import { usePersistedState } from '../util/persistance';
 import { createTimer, Timer } from '../util/timer';
 
 import { styles } from '../styles/app';
 import colours from '../styles/colours.json';
 
-import { useDispatch } from 'react-redux'
-import { addTimer } from '../store/actions'
+import { useSelector, useDispatch } from 'react-redux'
+import { addTimer, setTimer, startTimer as start, stopTimer as stop } from '../store/actions'
+import { RootState } from '../store';
 
 export const HomeScreen = () => {
-    const [timer, setTimer] = useState<Timer>(createTimer(20));
+    const running = useSelector((state: RootState) => state.front.running);
+    const timer = useSelector((state: RootState) => state.front.timer);
+
     const dispatch = useDispatch();
 
-    useEffect(()  => {
-        if (timer.running) {
-            (async () => {
-                await Permissions.registerForUserFacingNotificationsAsync();
-
-                const title = "Time's up!";
-                const body = `${timer.seconds}s has elapsed`;
-        
-                getTimeoutsForInterval(timer.seconds).forEach(time => {
-                    scheduleNotification(time, false, title, body);
-                });
-        
-                getRepeatingTimeoutsForInterval(timer.seconds).forEach(time => {
-                    scheduleNotification(time, true, title, body);
-                });
-            })();
-        } else {
-            Notifications.cancelAllScheduledNotificationsAsync();
-        }
-    }, [timer]);
-
+   
     let dropdown: any;
 
     const setDropdown = (ref: any) => dropdown = ref;
@@ -54,21 +32,32 @@ export const HomeScreen = () => {
             dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${timer.seconds}s to queue`);
         }
 
-        dispatch(addTimer(timer));
-        
-        setTimer(createTimer(timer.seconds));
+        dispatch(addTimer(createTimer(timer.seconds)));
     }
 
     const updateTimer = (seconds: number) => {
-        setTimer({...timer, seconds: seconds});
+        dispatch(setTimer(createTimer(seconds)));
     }
 
     const startTimer = () => {
-        setTimer({...timer, running: true});
+        const title = "Time's up!";
+        const body = `${timer.seconds}s has elapsed`;
+
+        getTimeoutsForInterval(timer.seconds).forEach(time => {
+            scheduleNotification(time, false, title, body);
+        });
+
+        getRepeatingTimeoutsForInterval(timer.seconds).forEach(time => {
+            scheduleNotification(time, true, title, body);
+        });
+
+        dispatch(start());
     }
 
     const stopTimer = () => {
-        setTimer({...timer, running: false});
+        cancelAllNotifications();
+
+        dispatch(stop());
     }
 
     const Header = () => (
@@ -78,7 +67,7 @@ export const HomeScreen = () => {
     );
 
     return (
-        <Layout style={styles.container}>
+        <Layout style={[styles.container, styles.background]}>
             <Layout style={styles.header}>
                 <Text style={styles.title}>Done Yet?</Text>
                 <Text style={styles.subtitle}>Designed by Peter, made for Jasmine</Text>
@@ -94,13 +83,13 @@ export const HomeScreen = () => {
                         <Picker.Item label="5s" value={5} />
                         <Picker.Item label="20s" value={20} />
                         <Picker.Item label="30s" value={30} />
-                        <Picker.Item label="40s" value={40} />
+                        <Picker.Item label="45s" value={45} />
                         <Picker.Item label="60s" value={60} />
                 </Picker>
 
             
                 <Modal 
-                    visible={timer.running}
+                    visible={running}
                     backdropStyle={styles.backdrop}>
 
                     <Card style={styles.card} disabled={true} status='success' header={Header}>
@@ -115,7 +104,7 @@ export const HomeScreen = () => {
             </Layout>
 
             <Layout style={styles.row}>
-                { timer.running ? 
+                { running ? 
                     (<Text></Text>) :
                     (<Button style={styles.startButton} appearance='filled' status='info' onPress={startTimer}>Start timer</Button>)
                 }

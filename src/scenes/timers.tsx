@@ -5,12 +5,11 @@ import React, { useState } from 'react';
 import { Text, Button, Divider, Layout, List, ListItem, Icon, Card, Spinner } from '@ui-kitten/components';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { styles } from '../styles/app';
-import colour from '../styles/colours.json';
+import colours from '../styles/colours.json';
 
 import { scheduleNotification} from '../util/notifications';
 import *  as Permissions from '../util/permissions';
 
-import  { usePersistedState } from '../util/persistance';
 import { Notifications } from 'expo';
 
 import { Timer } from '../util/timer';
@@ -21,18 +20,18 @@ const JsList: any = List;
 /* tslint:enable */
 
 import { useDispatch, useSelector } from 'react-redux'
-import { clearQueue as emptyQueue, removeTimer, scheduleTimer } from '../store/actions'
+import { clearQueue as emptyQueue, removeTimer, scheduleTimer, scheduleQueue } from '../store/actions'
 import { RootState } from '../store';
 
 export const TimersScreen = () => {
-    const [isScheduled, setScheduled] = usePersistedState<boolean>("scheduled", false);
-
+    const scheduled = useSelector((state: RootState) => state.queue.scheduledDate);
     const timers = useSelector((state: RootState) => state.queue.timers);
+
+    const isScheduled = scheduled > Date.now();
+
     const dispatch = useDispatch();
 
     const startTimers = async () => {
-        Permissions.registerForUserFacingNotificationsAsync();
-
         let accumulated = 0;
 
         for (let i = 0; i < timers.length; ++i) {
@@ -43,16 +42,16 @@ export const TimersScreen = () => {
             dispatch(scheduleTimer(timers[i].id, id));
         }
 
-        setScheduled(true);
+        dispatch(scheduleQueue(accumulated));
 
         setTimeout(() => {
-            setScheduled(false);
+            dispatch(scheduleQueue(0));
         }, accumulated *  1000);
     }
 
     const stopTimers = () => {
         Notifications.cancelAllScheduledNotificationsAsync();
-        setScheduled(false);
+        dispatch(scheduleQueue(0));
     }
 
     const deleteTimer = async (timer: Timer) => {
@@ -84,9 +83,10 @@ export const TimersScreen = () => {
 
     const renderItem = ({ item, index } : { item: Timer, index: number }) => (
         <JsListItem
-          title={`${item.seconds} seconds`}
-          accessory={() => renderItemIcon(item)}
-          keyExtractor={(item: Timer) => item.id}
+            style={styles.queueItem}
+            textStyle={styles.queueItemText}
+            title={`${item.seconds} seconds`}
+            accessory={() => renderItemIcon(item)}
         />
     );
       
@@ -98,11 +98,12 @@ export const TimersScreen = () => {
             </Layout>
             
             <Layout>
-                <Button textStyle={styles.buttonText} appearance='ghost' status='info' onPress={clearQueue}>Clear queue</Button>
+                <Button style={styles.background} textStyle={{color: colours.paleBright}} appearance='ghost' status='info' onPress={clearQueue}>Clear queue</Button>
             </Layout>
 
             <Layout style={styles.row}>
                 <JsList
+                    style={styles.queue}
                     data={timers}
                     ItemSeparatorComponent={Divider}
                     renderItem={renderItem}

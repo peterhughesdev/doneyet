@@ -20,9 +20,9 @@ INTERVAL_SEQUENCES.set(30, {
     repeat: [60, 90]
 });
 
-INTERVAL_SEQUENCES.set(40, {
-    once: [40],
-    repeat: [80, 120]
+INTERVAL_SEQUENCES.set(45, {
+    once: [45, 90, 135],
+    repeat: [180, 225, 270, 315]
 });
 
 INTERVAL_SEQUENCES.set(60, {
