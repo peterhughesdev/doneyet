@@ -5,7 +5,7 @@ import { Button } from '@ui-kitten/components';
 
 import { Colours, Typography, Buttons } from '../styles';
 
-interface ActionButtonProps {
+interface StopButtonProps {
     title: string,
     onPress: () => void
 }
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export const ActionButton = (props: ActionButtonProps) => {
+export const StopButton = (props: StopButtonProps) => {
     return (
         <Button style={styles.active} textStyle={styles.text} onPress={props.onPress}>{props.title}</Button>
     )

@@ -6,19 +6,19 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { HomeScreen } from '../scenes/home';
-import { TimersScreen } from '../scenes/timers';
+import { QueueScreen } from '../scenes/queue';
 
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-import colours from '../styles/colours.json';
+import { Colours } from '../styles';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const tabBarOptions = {
-    activeTintColor: colours.background,
-    inactiveTintColor: colours.background,
+    activeTintColor: Colours.text,
+    inactiveTintColor: Colours.paleWarm,
     style: {
-        backgroundColor: colours.accent
+        backgroundColor: Colours.accent
     }
 }
 
@@ -30,7 +30,7 @@ function Root() {
             <AntDesign name={focused ? 'clockcircle' : 'clockcircleo'} size={size} color={color} />
           ),
         }}/>
-        <Tab.Screen name="Queue" component={TimersScreen} options={{
+        <Tab.Screen name="Queue" component={QueueScreen} options={{
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons name={focused ? 'ios-list-box' : 'ios-list'} size={size} color={color} />
           ),

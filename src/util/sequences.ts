@@ -30,22 +30,11 @@ INTERVAL_SEQUENCES.set(60, {
     repeat: [60]
 });
 
-export const getRepeatingTimeoutsForInterval = (interval: number) : number[] => {
+export const iterateIntervalSequence = (interval: number, callback: (timeout: number, repeat: boolean) => void) => {
     const sequence = INTERVAL_SEQUENCES.get(interval);
 
     if (sequence) {
-        return sequence.repeat;
-    } else {
-        return [];
-    }
-}
-
-export const getTimeoutsForInterval = (interval: number) : number[] => {
-    const sequence = INTERVAL_SEQUENCES.get(interval);
-
-    if (sequence) {
-        return sequence.once;
-    } else {
-        return [];
+        sequence.once.forEach(timeout => callback(timeout, false));
+        sequence.repeat.forEach(timeout => callback(timeout, true));
     }
 }

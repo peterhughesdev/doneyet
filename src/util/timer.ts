@@ -1,5 +1,3 @@
-import { TimersScreen } from '../scenes/timers';
-
 export type Timer = {
     id: string,
     seconds: number,
