@@ -90,16 +90,15 @@ export const QueueScreen = () => {
             <BackgroundGradient />
             <SceneTitle title='Queue' />
 
-            <MutedButton onPress={clearQueue} title='Clear queue' />
+            {isScheduled ? 
+                (<StopButton onPress={stopTimers} title='Stop' />) :
+                (<ActionButton onPress={startTimers} title='Start' />)    
+            }
             
             <TimerList scheduled={isScheduled} timers={timers} deleteTimer={deleteTimer} />
             
-            <View style={styles.buttons}>
-                {isScheduled ? 
-                (<StopButton onPress={stopTimers} title='Stop timers' />) :
-                (<ActionButton onPress={startTimers} title='Start timers' />)    
-                }
-            </View>
+            <MutedButton onPress={clearQueue} title='Clear' />
+            
         </View>
     )
 }

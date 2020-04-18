@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const colours = [Colours.queue1, Colours.queue2, Colours.queue3, Colours.queue4];
+const colours = [Colours.queue2, Colours.queue3, Colours.queue4];
 
 export const TimerList = (props: TimerListProp) => {
 
