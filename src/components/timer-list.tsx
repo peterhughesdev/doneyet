@@ -16,6 +16,7 @@ import { Ionicons } from  '@expo/vector-icons';
 interface TimerListProp {
     timers: Timer[],
     scheduled: boolean,
+    toggleRepeat: (timer: Timer) => void,
     onDragEnd: (timers: Timer[]) => void,
     deleteTimer: (timer: Timer) => void
 }
@@ -28,12 +29,27 @@ const styles = StyleSheet.create({
     },
     queueItem:  {
         backgroundColor: Colours.accent,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
         paddingVertical: 10,
         marginVertical: 8,
         borderRadius: 12,
         opacity: 0.7,
         width: 300,
-        
+    },
+    queueItemIcon: {
+        justifyContent: 'center',
+        flex: 1
+    },
+    repeatIcon: {
+        color: Colours.modalBackdrop,
+        paddingHorizontal: 15,
+        fontSize: 25
+    },
+    repeatIconActive: {
+        color: Colours.paleBright,
+        paddingHorizontal: 15,
+        fontSize: 25
     },
     queueItemText:  {
         ...Typography.lightFont,
@@ -41,6 +57,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '200',
         fontSize: 25,
+        width: 140
     },
     queueIconLayout: {
         ...Spacing.row,
@@ -85,12 +102,22 @@ export const TimerList = (props: TimerListProp) => {
     const renderOverlay = ({ item, openLeft, openRight, openDirection, close }) => {
         const timer: Timer = item.item;
         const label = getLabel(timer);
-        
+
+        const repeatIconStyle = timer.repeats ? styles.repeatIconActive : styles.repeatIcon;
+        const toggleRepeat = () => props.toggleRepeat(timer);
+
         return (
             <View style={styles.queueRow}>
                 <TouchableOpacity style={styles.queueItem} onLongPress={item.drag}>
-                    <Ionicons name='ios-repeat' />
-                    <Text style={styles.queueItemText}>{timer.hours} {timer.minutes} {timer.seconds}</Text>
+                    <TouchableOpacity style={styles.queueItemIcon} onPressOut={toggleRepeat}>
+                        <Ionicons name='ios-repeat' style={repeatIconStyle} />
+                    </TouchableOpacity>
+                    
+                    <Text style={styles.queueItemText}>{label}</Text>
+
+                    <View style={styles.queueItemIcon}>
+                        
+                    </View>
                 </TouchableOpacity>
             </View>
         );

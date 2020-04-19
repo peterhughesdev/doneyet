@@ -1,18 +1,11 @@
 import { Timer } from  '../util/timer';
 
-export interface TimerState {
-    timer: Timer;
-    running: boolean
-}
-
 export interface QueueState {
     timers: Timer[];
     scheduledDate: number;
 }
 
-export const SET_TIMER = 'SET_TIMER';
-export const START_TIMER = 'START_TIMER';
-export const STOP_TIMER = 'STOP_TIMER';
+export const TOGGLE_REPEAT = 'TOGGLE_REPEAT';
 
 export const ADD_TIMER = 'ADD_TIMER';
 export const REMOVE_TIMER = 'REMOVE_TIMER';
@@ -22,17 +15,9 @@ export const CLEAR_QUEUE = 'CLEAR_QUEUE'
 export const REORDER_QUEUE = 'REORDER_QUEUE'
 export const SCHEDULE_QUEUE = 'SCHEDULE_QUEUE';
 
-interface SetTimerAction {
-    type: typeof SET_TIMER,
+interface ToggleRepeatAction {
+    type: typeof TOGGLE_REPEAT,
     payload: Timer
-}
-
-interface StartTimerAction {
-    type: typeof START_TIMER;
-}
-
-interface StopTimerAction {
-    type: typeof STOP_TIMER;
 }
 
 interface ClearQueueAction {
@@ -73,5 +58,4 @@ interface ScheduleQueueAction {
     }
 }
 
-export type QueueActions = ReorderQueueAction | ClearQueueAction | AddTimerAction | RemoveTimerAction | ScheduleTimerAction | ScheduleQueueAction;
-export type TimerActions = SetTimerAction | StartTimerAction | StopTimerAction;
+export type QueueActions = ToggleRepeatAction | ReorderQueueAction | ClearQueueAction | AddTimerAction | RemoveTimerAction | ScheduleTimerAction | ScheduleQueueAction;

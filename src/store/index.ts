@@ -5,38 +5,7 @@ import { AsyncStorage } from 'react-native';
 
 import { createTimer } from  '../util/timer';
 
-import { QueueState, QueueActions, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
-import { TimerState, TimerActions, SET_TIMER, START_TIMER, STOP_TIMER } from './types';
-
-const initialTimerState: TimerState = {
-    timer: createTimer(20),
-    running: false
-}
-
-const timerReducer = (
-    state = initialTimerState, 
-    action: TimerActions) : TimerState => {
-
-    switch (action.type) {
-        case SET_TIMER:
-            return {
-                ...state,
-                timer: action.payload
-            }
-        case START_TIMER:
-            return {
-                ...state,
-                running: true
-            }
-        case STOP_TIMER:
-            return {
-                ...state,
-                running: false
-            }
-        default:
-            return state;
-    }
-}
+import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
 
 const initialQueueState: QueueState = {
     timers: [],
@@ -58,10 +27,24 @@ const queueReducer = (
                 ...state,
                 timers: []
             }
+        case TOGGLE_REPEAT:
+            return {
+                ...state,
+                timers: state.timers.map(timer => {
+                    if (timer.id === action.payload.id) {
+                        return {
+                            ...timer,
+                            repeats: !timer.repeats
+                        }
+                    } else {
+                        return timer;
+                    }
+                })
+            }
         case ADD_TIMER:
             return {
                 ...state,
-                timers: [...state.timers, createTimer(action.payload.seconds)]
+                timers: [...state.timers, action.payload]
             }
         case REMOVE_TIMER:
             return {
@@ -98,7 +81,6 @@ const queueReducer = (
 }
 
 const rootReducer = combineReducers({
-    front: timerReducer,
     queue: queueReducer
 });
 

@@ -9,7 +9,7 @@ import { createTimer, getLabel, Timer } from '../util/timer';
 import { Layout as Spacing, Colours } from '../styles';
 
 import { useSelector, useDispatch } from 'react-redux'
-import { addTimer, removeTimer, scheduleTimer, reorderQueue } from '../store/actions'
+import { toggleRepeat, addTimer, removeTimer, scheduleTimer, reorderQueue } from '../store/actions'
 import { RootState } from '../store';
 
 import { BackgroundGradient } from '../components/background-gradient';
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 export const HomeScreen = () => {
     const timers = useSelector((state: RootState) => state.queue.timers);
 
-    const [seconds, setSeconds] = useState<number>(20);
+    const [seconds, setSeconds] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
     const [hours, setHours] = useState<number>(0);
 
@@ -87,9 +87,13 @@ export const HomeScreen = () => {
         dispatch(reorderQueue(unscheduled));
     }
 
-    const deleteTimer = async (timer: Timer) => {
+    const deleteTimer = (timer: Timer) => {
         unscheduleTimer(timer);
         dispatch(removeTimer(timer.id));
+    }
+
+    const toggleTimerRepeat = (timer: Timer) => {
+        dispatch(toggleRepeat(timer));
     }
 
     return (
@@ -114,7 +118,7 @@ export const HomeScreen = () => {
             </View>
 
             <View style={styles.queue}>
-                <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} onDragEnd={reorderTimers} />
+                <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
             </View>
 
             <DropdownAlert ref={setDropdown} infoColor={Colours.background} />

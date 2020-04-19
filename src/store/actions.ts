@@ -1,6 +1,12 @@
 import { Timer } from '../util/timer';
-import { CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, QueueActions, REORDER_QUEUE } from './types';
-import { SET_TIMER, START_TIMER, STOP_TIMER, TimerActions } from './types';
+import { TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, REORDER_QUEUE, QueueActions } from './types';
+
+export const toggleRepeat = (timer: Timer) : QueueActions => {
+    return {
+        type: TOGGLE_REPEAT,
+        payload: timer
+    }
+}
 
 export const addTimer = (timer: Timer) : QueueActions => {
     return {
@@ -40,24 +46,5 @@ export const scheduleTimer = (id: string, scheduled: string) : QueueActions  => 
             id,
             scheduled
         }
-    }
-}
-
-export const setTimer = (timer: Timer) : TimerActions => {
-    return {
-        type: SET_TIMER,
-        payload: timer
-    }
-}
-
-export const startTimer = () : TimerActions => {
-    return  {
-        type: START_TIMER
-    }
-}
-
-export const stopTimer = () : TimerActions => {
-    return  {
-        type: STOP_TIMER
     }
 }

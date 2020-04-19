@@ -37,11 +37,10 @@ INTERVAL_SEQUENCES.set(60, {
 });
 
 export const seconds = [
-    { label: '5s', value: 5 },
+    { label: '0s', value: 0 },
     { label: '20s', value: 20 },
     { label: '30s', value: 30 },
-    { label: '45s', value: 45 },
-    { label: '60s', value: 60 },
+    { label: '45s', value: 45 }
 ];
 
 export const minutes = [
@@ -50,6 +49,11 @@ export const minutes = [
     { label: '5m', value: 5 },
     { label: '10m', value: 10 },
     { label: '15m', value: 15 },
+    { label: '20m', value: 20 },
+    { label: '25m', value: 25 },
+    { label: '30m', value: 30 },
+    { label: '35m', value: 35 },
+    { label: '45m', value: 45 },
 ]
 
 export const hours = [
