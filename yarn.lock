@@ -4689,6 +4689,11 @@ react-native-circular-slider@^1.0.1:
     lodash.range "^3.2.0"
     react-native-svg ">=4.3.3"
 
+react-native-draggable-flatlist@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-2.3.2.tgz#4d84b2f7298d2426a4e5a95290c3b10861d81bf2"
+  integrity sha512-IoVmTwfUX+dvkgmIrJdPkwfgARJDCY+/KGVhYLGUzPvYpIIlcwhv7Vn6430GyEaO9TPsgnSVsOwVprnN16tn3Q==
+
 react-native-dropdownalert@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-native-dropdownalert/-/react-native-dropdownalert-4.2.1.tgz#e49ca7b37fde4582aaecc6d241828e907c18a520"
@@ -4757,6 +4762,11 @@ react-native-svg@>=4.3.3:
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
+
+react-native-swipeable-item@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-swipeable-item/-/react-native-swipeable-item-1.5.0.tgz#95fe917dc2542acf41c0c442b50f4436bd22c7d3"
+  integrity sha512-GX9AZcbYR+6jIYeXLA1g1Gaqes0auyWCisRq/VWsoJ1XDgOC0BorcOFZkubDNuctDRe+uPwLADOvdkELQokcvA==
 
 react-native-tab-view@^2.14.0:
   version "2.14.0"

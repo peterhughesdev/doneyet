@@ -1,31 +1,27 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Spinner } from '@ui-kitten/components';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 import DropdownAlert from 'react-native-dropdownalert';
 
-import { scheduleNotification, cancelAllNotifications } from '../util/notifications';
-
-import { iterateIntervalSequence } from '../util/sequences';
-import { createTimer } from '../util/timer';
+import { intervals, scheduleTimers, unscheduleTimer, unscheduleTimers } from '../util/scheduler';
+import { createTimer, getLabel, Timer } from '../util/timer';
 
 import { Layout as Spacing, Colours } from '../styles';
 
 import { useSelector, useDispatch } from 'react-redux'
-import { addTimer, setTimer, startTimer as start, stopTimer as stop } from '../store/actions'
+import { addTimer, removeTimer, scheduleTimer, reorderQueue } from '../store/actions'
 import { RootState } from '../store';
 
 import { BackgroundGradient } from '../components/background-gradient';
 import { ActionButton } from '../components/action-button';
-import { StopButton } from '../components/stop-button';
 import { SceneTitle } from '../components/scene-title';
 import { TimePicker } from '../components/time-picker';
-import { TimerModal } from '../components/timer-modal';
+import { TimerList } from '../components/timer-list';
 
 const styles = StyleSheet.create({
     container: {
+        ...Spacing.vertical,
         paddingTop: 35,
-        ...Spacing.vertical
     },
     spinner: {
         justifyContent: 'center',
@@ -33,18 +29,29 @@ const styles = StyleSheet.create({
         marginVertical: 15,
         backgroundColor: Colours.transparent
     },
+    pickers: {
+        ...Spacing.row,
+        marginBottom: 30,
+    },
+    buttons: {
+        ...Spacing.row,
+        justifyContent: 'space-between',
+        marginTop: 160,
+    },
+    queue: {
+        ...Spacing.fullWidth,
+        alignItems: 'center',
+        marginTop: 100,
+        height: 400
+    }
 });
 
-const options = [
-    { label: '20s', value: 20 },
-    { label: '30s', value: 30 },
-    { label: '45s', value: 45 },
-    { label: '60s', value: 60 },
-];
-
 export const HomeScreen = () => {
-    const running = useSelector((state: RootState) => state.front.running);
-    const timer = useSelector((state: RootState) => state.front.timer);
+    const timers = useSelector((state: RootState) => state.queue.timers);
+
+    const [seconds, setSeconds] = useState<number>(20);
+    const [minutes, setMinutes] = useState<number>(0);
+    const [hours, setHours] = useState<number>(0);
 
     const dispatch = useDispatch();
    
@@ -52,33 +59,37 @@ export const HomeScreen = () => {
 
     const setDropdown = (ref: any) => dropdown = ref;
 
+    const timersRunning = timers.filter(timer => timer.scheduled.length).length;
+
+    const timer = createTimer(seconds, minutes, hours);
+    const label = getLabel(timer);
+
+    const reorderTimers = (timers: Timer[]) => {
+        dispatch(reorderQueue(timers));
+    }
+
     const queueTimer = () => {
         if (dropdown) {
-            dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${timer.seconds}s to queue`);
+            dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${label} to queue`);
         }
 
-        dispatch(addTimer(createTimer(timer.seconds)));
+        dispatch(addTimer(timer));
     }
 
-    const updateTimer = (seconds: number) => {
-        dispatch(setTimer(createTimer(seconds)));
-    }
-
-    const startTimer = () => {
-        const title = "Time's up!";
-        const body = `${timer.seconds}s has elapsed`;
-
-        iterateIntervalSequence(timer.seconds, (time, repeat) => {
-            scheduleNotification(time, repeat, title, body);
+    const handleStart = () => {
+        scheduleTimers(timers, (timer, id) => {
+            dispatch(scheduleTimer(timer.id, id));
         });
-
-        dispatch(start());
     }
 
-    const stopTimer = () => {
-        cancelAllNotifications();
+    const handleStop = () => {
+        const unscheduled = unscheduleTimers(timers);
+        dispatch(reorderQueue(unscheduled));
+    }
 
-        dispatch(stop());
+    const deleteTimer = async (timer: Timer) => {
+        unscheduleTimer(timer);
+        dispatch(removeTimer(timer.id));
     }
 
     return (
@@ -86,20 +97,25 @@ export const HomeScreen = () => {
             <BackgroundGradient />
 
             <SceneTitle title='Done Yet.' subtitle='Designed and built by Jasmine and Peter' />
-            <TimePicker value={timer.seconds} values={options} onChange={updateTimer} />
             
-            <View style={Spacing.row}>
-                <ActionButton onPress={startTimer} title='Start' />
+            <View style={styles.pickers}>
+                <TimePicker value={hours} values={intervals.hours} onChange={hours => setHours(hours)} />
+                <TimePicker value={minutes} values={intervals.minutes} onChange={minutes => setMinutes(minutes)} />
+                <TimePicker value={seconds} values={intervals.seconds} onChange={seconds => setSeconds(seconds)} />
+            </View>
+
+            <View style={styles.buttons}>
+                {timersRunning ?
+                    (<ActionButton onPress={handleStop} title='Stop' /> ) :
+                    (<ActionButton onPress={handleStart} title='Start' />)
+                }
+                
                 <ActionButton onPress={queueTimer} title='Queue' />
             </View>
 
-            <TimerModal title={`Sending alerts on a ${timer.seconds} second interval`} visible={running}>
-                <View style={styles.spinner}>
-                    <Spinner size="large" status='success' />
-                </View>
-
-                <StopButton onPress={stopTimer} title='Stop timer' /> 
-            </TimerModal>
+            <View style={styles.queue}>
+                <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} onDragEnd={reorderTimers} />
+            </View>
 
             <DropdownAlert ref={setDropdown} infoColor={Colours.background} />
         </View>

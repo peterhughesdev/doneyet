@@ -19,6 +19,7 @@ export const REMOVE_TIMER = 'REMOVE_TIMER';
 export const SCHEDULE_TIMER = 'SCHEDULE_TIMER'
 
 export const CLEAR_QUEUE = 'CLEAR_QUEUE'
+export const REORDER_QUEUE = 'REORDER_QUEUE'
 export const SCHEDULE_QUEUE = 'SCHEDULE_QUEUE';
 
 interface SetTimerAction {
@@ -36,6 +37,13 @@ interface StopTimerAction {
 
 interface ClearQueueAction {
     type: typeof CLEAR_QUEUE
+}
+
+interface ReorderQueueAction {
+    type: typeof REORDER_QUEUE,
+    payload: {
+        timers: Timer[]
+    }
 }
 
 interface AddTimerAction {
@@ -65,5 +73,5 @@ interface ScheduleQueueAction {
     }
 }
 
-export type QueueActions = ClearQueueAction | AddTimerAction | RemoveTimerAction | ScheduleTimerAction | ScheduleQueueAction;
+export type QueueActions = ReorderQueueAction | ClearQueueAction | AddTimerAction | RemoveTimerAction | ScheduleTimerAction | ScheduleQueueAction;
 export type TimerActions = SetTimerAction | StartTimerAction | StopTimerAction;

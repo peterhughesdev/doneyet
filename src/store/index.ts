@@ -5,7 +5,7 @@ import { AsyncStorage } from 'react-native';
 
 import { createTimer } from  '../util/timer';
 
-import { QueueState, QueueActions, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE } from './types';
+import { QueueState, QueueActions, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
 import { TimerState, TimerActions, SET_TIMER, START_TIMER, STOP_TIMER } from './types';
 
 const initialTimerState: TimerState = {
@@ -48,6 +48,11 @@ const queueReducer = (
     action: QueueActions) : QueueState => {
 
     switch (action.type) {
+        case REORDER_QUEUE:
+            return {
+                ...state,
+                timers: action.payload.timers
+            }
         case CLEAR_QUEUE:
             return {
                 ...state,
@@ -68,7 +73,7 @@ const queueReducer = (
                 ...state,
                 timers: state.timers.map(timer => {
                     if (timer.id == action.payload.id) {
-                        const scheduled = action.payload.scheduled;
+                        const scheduled = timer.scheduled.concat(action.payload.scheduled);
 
                         return {
                             ...timer,

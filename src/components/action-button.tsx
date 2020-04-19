@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Button } from '@ui-kitten/components';
 
 import { Colours, Typography, Buttons } from '../styles';
@@ -13,17 +13,21 @@ interface ActionButtonProps {
 const styles = StyleSheet.create({
     active: {
         ...Buttons.action,
-        backgroundColor: Colours.transparent,
-        borderColor: Colours.transparent
+        borderColor: Colours.transparent,
+        height: 50,
+        width: 100
     },
     text: {
         ...Typography.buttonText,
-        color: Colours.text
+        color: Colours.text,
+        padding: 15
     }
 });
 
 export const ActionButton = (props: ActionButtonProps) => {
     return (
-        <Button style={styles.active} textStyle={styles.text} onPress={props.onPress}>{props.title}</Button>
+        <TouchableOpacity style={styles.active} onPress={props.onPress}>
+            <Text style={styles.text} >{props.title}</Text>
+        </TouchableOpacity>
     )
 }

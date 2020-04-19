@@ -1,7 +1,18 @@
-import { ViewStyle } from 'react-native';
+import { Dimensions, ViewStyle } from 'react-native';
+
+var width = Dimensions.get('window').width; //full width
+var height = Dimensions.get('window').height; //full height
 
 export const full = {
     flex: 1
+}
+
+export const fullWidth = {
+    width: width
+}
+
+export const fullHeight = {
+    height: height
 }
 
 export const vertical: ViewStyle = {

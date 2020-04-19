@@ -1,36 +1,39 @@
 import React from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { Layout, Divider, List, ListItem, Spinner } from '@ui-kitten/components';
-import { AntDesign } from '@expo/vector-icons';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+
+import Animated from  'react-native-reanimated';
+import SwipeableItem from 'react-native-swipeable-item';
+import DraggableFlatList from "react-native-draggable-flatlist";
+
+import {  AntDesign } from '@expo/vector-icons';
 
 import { Layout as Spacing, Colours, Typography } from '../styles';
-import { Timer } from '../util/timer';
+import { getLabel, Timer } from '../util/timer';
+
+import { Ionicons } from  '@expo/vector-icons';
 
 interface TimerListProp {
     timers: Timer[],
     scheduled: boolean,
+    onDragEnd: (timers: Timer[]) => void,
     deleteTimer: (timer: Timer) => void
 }
 
 const styles = StyleSheet.create({
-    queue: {
-        width: 300,
-        backgroundColor: Colours.transparent,
-        overflow: 'visible'
+    queueRow: {
+        ...Spacing.fullWidth,
+        justifyContent: 'center',
+        flexDirection: 'row'
     },
     queueItem:  {
-        marginBottom: 15,
-        borderRadius: 12,
-        backgroundColor: Colours.background,
+        backgroundColor: Colours.accent,
         paddingVertical: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,      
-        },
-        shadowOpacity: 0.07,
-        shadowRadius: 20,
+        marginVertical: 8,
+        borderRadius: 12,
+        opacity: 0.7,
+        width: 300,
+        
     },
     queueItemText:  {
         ...Typography.lightFont,
@@ -45,39 +48,73 @@ const styles = StyleSheet.create({
         backgroundColor: Colours.transparent
     },
     deleteIcon: {
-        color: Colours.text
+        color: Colours.paleBright,
+        fontWeight: "bold",
+        fontSize: 32
+    },
+    row: {
+        flexDirection: "row",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "space-around",
+        padding: 15
+    },
+    underlayRight: {
+        flex: 1,
+        backgroundColor: "teal",
+        justifyContent: "flex-start"
+    },
+    underlayLeft: {
+        flex: 1,
+        backgroundColor: "tomato",
+        justifyContent: "flex-end"
     }
 });
 
-const colours = [Colours.queue2, Colours.queue3, Colours.queue4];
-
 export const TimerList = (props: TimerListProp) => {
 
-    const renderItemIcon = (item: Timer) => (
-        <Layout style={styles.queueIconLayout}>
-            {props.scheduled ? 
-            (<Spinner size="small" status='basic' />) :
-            (<Text></Text>)
-            }
-            <AntDesign name='delete' style={styles.deleteIcon} onPress={() => props.deleteTimer(item)} />
-        </Layout>
-    );
-    
-    const renderItem = ({ item, index } : { item: Timer, index: number }) => {
-        const bg = colours[index % colours.length];
+    const renderUnderlayLeft = ({ item, percentOpen } : { item : { item: Timer }, percentOpen: number }) => (
+        <Animated.View
+          style={[styles.row, styles.underlayLeft, { opacity: percentOpen }]} >
+          <TouchableOpacity onPressOut={() => props.deleteTimer(item.item)}>
+              <AntDesign name='delete' style={styles.deleteIcon} />
+          </TouchableOpacity>
+        </Animated.View>
+      );
 
+    const renderOverlay = ({ item, openLeft, openRight, openDirection, close }) => {
+        const timer: Timer = item.item;
+        const label = getLabel(timer);
+        
         return (
-            <View style={[styles.queueItem, { backgroundColor: bg }]}>
-                <Text style={styles.queueItemText}>{item.seconds} seconds</Text>
+            <View style={styles.queueRow}>
+                <TouchableOpacity style={styles.queueItem} onLongPress={item.drag}>
+                    <Ionicons name='ios-repeat' />
+                    <Text style={styles.queueItemText}>{timer.hours} {timer.minutes} {timer.seconds}</Text>
+                </TouchableOpacity>
             </View>
+        );
+    };
+
+    const renderItem = ({ item, index, drag } : { item: Timer, index?: any, drag: any }) => {
+        return (
+            <SwipeableItem
+                key={item.id}
+                item={{ item, drag }}
+                overSwipe={50}
+                snapPointsLeft={[100]}
+                renderOverlay={renderOverlay}
+                renderUnderlayLeft={renderUnderlayLeft}
+            />
         );
     }
 
     return (
-        <List
-            style={styles.queue}
+        <DraggableFlatList
+            activationDistance={15}
+            keyExtractor={item => item.id}
             data={props.timers}
             renderItem={renderItem}
-        />
+            onDragEnd={({ data }) => { props.onDragEnd(data); }} />
     )
 }

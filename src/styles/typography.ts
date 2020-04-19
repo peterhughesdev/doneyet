@@ -20,10 +20,11 @@ export const subtitle: TextStyle = {
 
 export const buttonText: TextStyle = {
     ...iOSUIKit.calloutWhiteObject,
+    textTransform: 'uppercase',
     fontFamily: 'Helvetica Neue',
-    fontWeight: '300',
+    fontWeight: '100',
     textAlign: 'center',
-    fontSize: 25
+    fontSize: 26
 };
 
 export const textShadow: TextStyle = {

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -22,22 +23,25 @@ const tabBarOptions = {
     }
 }
 
-function Root() {
-    return (
-      <Tab.Navigator tabBarOptions={tabBarOptions}>
-        <Tab.Screen name="Home" component={HomeScreen} options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <AntDesign name={focused ? 'clockcircle' : 'clockcircleo'} size={size} color={color} />
-          ),
-        }}/>
-        <Tab.Screen name="Queue" component={QueueScreen} options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name={focused ? 'ios-list-box' : 'ios-list'} size={size} color={color} />
-          ),
-        }}/>
-      </Tab.Navigator>
-    );
-}
+// function Root() {
+//     return (
+//       <Tab.Navigator tabBarOptions={tabBarOptions}>
+//         <Tab.Screen name="Home" component={HomeScreen} options={{
+//           tabBarIcon: ({ focused, color, size }) => (
+//             <AntDesign name={focused ? 'clockcircle' : 'clockcircleo'} size={size} color={color} />
+//           ),
+//         }}/>
+//         <Tab.Screen name="Queue" component={QueueScreen} options={{
+//           tabBarIcon: ({ focused, color, size }) => (
+//             <Ionicons name={focused ? 'ios-list-box' : 'ios-list'} size={size} color={color} />
+//           ),
+//         }}/>
+//       </Tab.Navigator>
+//     );
+// }
+
+const Root = gestureHandlerRootHOC(HomeScreen);
+
 
 export const AppContainer = () => {
     return (

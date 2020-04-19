@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     },
     text: {
         ...Typography.buttonText,
-        color: Colours.text
+        color: Colours.paleBright
     }
 });
 

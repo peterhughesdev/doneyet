@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor: Colours.paleCool,
-        backgroundColor: Colours.paleCool
+        borderColor: Colours.paleWarm,
+        backgroundColor: Colours.paleWarm
     },
     backdrop: {
         backgroundColor: Colours.modalBackdrop

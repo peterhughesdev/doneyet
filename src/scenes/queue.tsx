@@ -3,7 +3,6 @@
 import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
-import { Layout } from '@ui-kitten/components';
 import { scheduleNotification} from '../util/notifications';
 
 import { Notifications } from 'expo';
