@@ -56,7 +56,10 @@ const queueReducer = (
                 ...state,
                 timers: state.timers.map(timer => {
                     if (timer.id == action.payload.id) {
-                        const scheduled = timer.scheduled.concat(action.payload.scheduled);
+                        const scheduled = timer.scheduled.concat({
+                            start: Date.now(),
+                            id: action.payload.scheduled
+                        });
 
                         return {
                             ...timer,

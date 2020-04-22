@@ -4,11 +4,9 @@ import { StyleSheet, Picker } from 'react-native';
 import { Colours } from '../styles';
 
 interface TimePickerProps {
+    suffix: string,
     value: number,
-    values: {
-        label: string,
-        value: number
-    }[],
+    values: number[],
     onChange: (value: number) => void
 }
 
@@ -23,7 +21,7 @@ const styles = StyleSheet.create({
 
 export const TimePicker = (props: TimePickerProps) => {
     const options = props.values.map(option => {
-        return <Picker.Item key={option.value} value={option.value} label={option.label} />
+        return <Picker.Item key={option} value={option} label={`${option}${props.suffix}`} />
     });
 
     return (

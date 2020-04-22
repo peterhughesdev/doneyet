@@ -1,6 +1,6 @@
 export interface Schedule {
     start: number,
-    repeats: boolean
+    id: string
 }
 
 export interface Timer {
@@ -10,7 +10,7 @@ export interface Timer {
     hours: number,
     thread: number,
     repeats: boolean,
-    scheduled: string[]
+    scheduled: Schedule[]
 }
 
 export const createTimer = (seconds: number, minutes: number = 0,  hours: number = 0) : Timer => {

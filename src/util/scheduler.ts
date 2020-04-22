@@ -1,6 +1,6 @@
 
 import { scheduleNotification, cancelNotification, cancelAllNotifications } from '../util/notifications';
-import { getTotalSeconds, Timer } from './timer';
+import { getTotalSeconds, Timer, Schedule } from './timer';
 
 const title = "Do the thing NOW...";
 
@@ -36,33 +36,9 @@ INTERVAL_SEQUENCES.set(60, {
     repeat: [60]
 });
 
-export const seconds = [
-    { label: '0s', value: 0 },
-    { label: '20s', value: 20 },
-    { label: '30s', value: 30 },
-    { label: '45s', value: 45 }
-];
-
-export const minutes = [
-    { label: '0m', value: 0 },
-    { label: '1m', value: 1 },
-    { label: '5m', value: 5 },
-    { label: '10m', value: 10 },
-    { label: '15m', value: 15 },
-    { label: '20m', value: 20 },
-    { label: '25m', value: 25 },
-    { label: '30m', value: 30 },
-    { label: '35m', value: 35 },
-    { label: '45m', value: 45 },
-]
-
-export const hours = [
-    { label: '0h', value: 0 },
-    { label: '1h', value: 1 },
-    { label: '2h', value: 2 },
-    { label: '3h', value: 3 },
-    { label: '4h', value: 4 },
-]
+export const seconds = [0, 20, 30, 45];
+export const minutes: number[] = Array.from({length: 60}, (x,i) => i);
+export const hours: number[] = [0, 1, 2, 3, 4, 5];
 
 export const intervals = {
     seconds,
@@ -77,6 +53,14 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
         sequence.once.forEach(timeout => callback(timeout, false));
         sequence.repeat.forEach(timeout => callback(timeout, true));
     }
+}
+
+export const hasRunningTimers = (timers: Timer[]) : boolean => {
+    const now = Date.now();
+
+    return timers.filter(timer => timer.scheduled.filter(schedule => {
+        return schedule.start + getTotalSeconds(timer) > now;
+    }).length).length > 0;
 }
 
 export const scheduleTimers = (timers: Timer[], onScheduled: (timer: Timer, id: string) => void) => {
@@ -119,9 +103,9 @@ export const unscheduleTimers = (timers: Timer[]) => {
 }
 
 export const unscheduleTimer = (timer: Timer) =>  {
-    timer.scheduled.forEach(async (id) => {
+    timer.scheduled.forEach(async (schedule) => {
         try {
-            await cancelNotification(id);
+            await cancelNotification(schedule.id);
         } catch (e) {
             // no-op
         }

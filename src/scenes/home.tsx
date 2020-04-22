@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 
 import DropdownAlert from 'react-native-dropdownalert';
 
-import { intervals, scheduleTimers, unscheduleTimer, unscheduleTimers } from '../util/scheduler';
+import { intervals, scheduleTimers, unscheduleTimer, unscheduleTimers, hasRunningTimers } from '../util/scheduler';
 import { createTimer, getLabel, Timer } from '../util/timer';
 
 import { Layout as Spacing, Colours } from '../styles';
@@ -18,34 +18,6 @@ import { SceneTitle } from '../components/scene-title';
 import { TimePicker } from '../components/time-picker';
 import { TimerList } from '../components/timer-list';
 
-const styles = StyleSheet.create({
-    container: {
-        ...Spacing.vertical,
-        paddingTop: 35,
-    },
-    spinner: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: 15,
-        backgroundColor: Colours.transparent
-    },
-    pickers: {
-        ...Spacing.row,
-        marginBottom: 30,
-    },
-    buttons: {
-        ...Spacing.row,
-        justifyContent: 'space-between',
-        marginTop: 160,
-    },
-    queue: {
-        ...Spacing.fullWidth,
-        alignItems: 'center',
-        marginTop: 100,
-        height: 400
-    }
-});
-
 export const HomeScreen = () => {
     const timers = useSelector((state: RootState) => state.queue.timers);
 
@@ -59,7 +31,7 @@ export const HomeScreen = () => {
 
     const setDropdown = (ref: any) => dropdown = ref;
 
-    const timersRunning = timers.filter(timer => timer.scheduled.length).length;
+    const timersRunning = hasRunningTimers(timers);
 
     const timer = createTimer(seconds, minutes, hours);
     const label = getLabel(timer);
@@ -103,9 +75,9 @@ export const HomeScreen = () => {
             <SceneTitle title='Done Yet.' subtitle='Designed and built by Jasmine and Peter' />
             
             <View style={styles.pickers}>
-                <TimePicker value={hours} values={intervals.hours} onChange={hours => setHours(hours)} />
-                <TimePicker value={minutes} values={intervals.minutes} onChange={minutes => setMinutes(minutes)} />
-                <TimePicker value={seconds} values={intervals.seconds} onChange={seconds => setSeconds(seconds)} />
+                <TimePicker value={hours} suffix='h' values={intervals.hours} onChange={hours => setHours(hours)} />
+                <TimePicker value={minutes} suffix='m' values={intervals.minutes} onChange={minutes => setMinutes(minutes)} />
+                <TimePicker value={seconds} suffix='s' values={intervals.seconds} onChange={seconds => setSeconds(seconds)} />
             </View>
 
             <View style={styles.buttons}>
@@ -125,3 +97,31 @@ export const HomeScreen = () => {
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        ...Spacing.vertical,
+        paddingTop: 35,
+    },
+    spinner: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 15,
+        backgroundColor: Colours.transparent
+    },
+    pickers: {
+        ...Spacing.row,
+        marginBottom: 30,
+    },
+    buttons: {
+        ...Spacing.row,
+        justifyContent: 'space-between',
+        marginTop: 160,
+    },
+    queue: {
+        ...Spacing.fullWidth,
+        alignItems: 'center',
+        marginTop: 100,
+        height: 400
+    }
+});
