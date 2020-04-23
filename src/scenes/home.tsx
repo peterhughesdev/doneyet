@@ -83,10 +83,10 @@ export const HomeScreen = () => {
             <View style={styles.buttons}>
                 {timersRunning ?
                     (<ActionButton onPress={handleStop} title='Stop' /> ) :
-                    (<ActionButton onPress={handleStart} title='Start' />)
+                    (<ActionButton onPress={handleStart} title='Start' active={timers.length > 0} />)
                 }
                 
-                <ActionButton onPress={queueTimer} title='Queue' />
+                <ActionButton onPress={queueTimer} title='Queue' active={seconds + minutes + hours > 0} />
             </View>
 
             <View style={styles.queue}>

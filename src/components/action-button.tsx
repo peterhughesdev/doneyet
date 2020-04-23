@@ -1,14 +1,31 @@
 import React from 'react';
 
+import { useSpring, animated } from 'react-spring/native'
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { Button } from '@ui-kitten/components';
 
 import { Colours, Typography, Buttons } from '../styles';
 
 interface ActionButtonProps {
     title: string,
+    active: boolean,
     onPress: () => void
 }
+
+const AnimatedText = animated(Text);
+
+export const ActionButton = (props: ActionButtonProps) => {
+    const activeToggle = useSpring({opacity: props.active ? 1 : 0.4})
+
+    return (
+        <TouchableOpacity style={styles.active} onPress={props.onPress} disabled={!props.active}>
+            <AnimatedText style={[styles.text, activeToggle]}>{props.title}</AnimatedText>
+        </TouchableOpacity>
+    )
+}
+
+ActionButton.defaultProps = {
+    active: true
+};
 
 const styles = StyleSheet.create({
     active: {
@@ -23,11 +40,3 @@ const styles = StyleSheet.create({
         padding: 15
     }
 });
-
-export const ActionButton = (props: ActionButtonProps) => {
-    return (
-        <TouchableOpacity style={styles.active} onPress={props.onPress}>
-            <Text style={styles.text} >{props.title}</Text>
-        </TouchableOpacity>
-    )
-}
