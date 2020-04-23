@@ -26,6 +26,7 @@ export const TimerListItem = (props: TimerListItemProps) => {
     const toggleRepeat = () => props.toggleRepeat(props.timer);
 
     const animatedStyle = {
+        ...styles.queueRow,
         opacity: slideFadeIn.opacity,
         transform: [{ 
             translateY: slideFadeIn.translateY
@@ -33,23 +34,19 @@ export const TimerListItem = (props: TimerListItemProps) => {
     };
 
     return (        
-            <View style={styles.queueRow}>
-                <AnimatedView style={animatedStyle}>
-
-                <TouchableOpacity style={styles.queueItem} onLongPress={props.drag}>
-                    <TouchableOpacity style={styles.queueItemIcon} onPressOut={toggleRepeat}>
-                        <Ionicons name='ios-repeat' style={repeatIconStyle} />
-                    </TouchableOpacity>
-                    
-                    <Text style={styles.queueItemText}>{label}</Text>
-
-                    <View style={styles.queueItemIcon}>
-                        
-                    </View>
+        <AnimatedView style={animatedStyle}>
+            <TouchableOpacity style={styles.queueItem} onLongPress={props.drag}>
+                <TouchableOpacity style={styles.queueItemIcon} onPressOut={toggleRepeat}>
+                    <Ionicons name='ios-repeat' style={repeatIconStyle} />
                 </TouchableOpacity>
+                
+                <Text style={styles.queueItemText}>{label}</Text>
 
-                </AnimatedView>
-            </View>
+                <View style={styles.queueItemIcon}>
+                    
+                </View>
+            </TouchableOpacity>
+        </AnimatedView>  
     );
 }
 
@@ -90,32 +87,5 @@ const styles = StyleSheet.create({
         fontWeight: '200',
         fontSize: 25,
         width: 140
-    },
-    queueIconLayout: {
-        ...Spacing.row,
-        justifyContent: 'flex-end',
-        backgroundColor: Colours.transparent
-    },
-    deleteIcon: {
-        color: Colours.paleBright,
-        fontWeight: "bold",
-        fontSize: 32
-    },
-    row: {
-        flexDirection: "row",
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "space-around",
-        padding: 15
-    },
-    underlayRight: {
-        flex: 1,
-        backgroundColor: "teal",
-        justifyContent: "flex-start"
-    },
-    underlayLeft: {
-        flex: 1,
-        backgroundColor: "tomato",
-        justifyContent: "flex-end"
     }
 });
