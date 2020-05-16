@@ -2,14 +2,16 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Layout, Colours } from '../styles';
+import { Theme } from '../util/theme';
 
-export const Pallette = ({ title, colours } : { title: string, colours: string[]}) => {
+export const Pallette = ({ theme, onPress } : { theme: Theme, onPress: () => void}) => {
     return (
-        <TouchableOpacity style={styles.pallette}>
-            <View style={[styles.palletteBox, { backgroundColor: colours[0] }]}></View>
-            <View style={[styles.palletteBox, { backgroundColor: colours[1] }]}></View>
-            <View style={[styles.palletteBox, { backgroundColor: colours[2] }]}></View>
-            <View style={[styles.palletteBox, { backgroundColor: colours[3] }]}></View>
+        <TouchableOpacity style={styles.pallette} onPress={onPress}>
+            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundCool }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundWarm }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.textPrimary }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.textSecondary }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.accent }]}></View>
         </TouchableOpacity>
     );
 }

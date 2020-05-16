@@ -1,9 +1,24 @@
 import { Timer } from  '../util/timer';
+import { Theme } from '../util/theme';
+
+
+export interface ThemeState {
+    active: Theme
+}
 
 export interface QueueState {
     timers: Timer[];
     scheduledDate: number;
 }
+
+export const SET_THEME = 'SET_THEME';
+
+interface SetThemeAction {
+    type: typeof SET_THEME,
+    theme: Theme
+}
+
+export type ThemeActions = SetThemeAction;
 
 export const TOGGLE_REPEAT = 'TOGGLE_REPEAT';
 

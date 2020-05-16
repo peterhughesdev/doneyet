@@ -3,9 +3,29 @@ import { persistStore, persistReducer } from 'redux-persist';
 
 import { AsyncStorage } from 'react-native';
 
-import { createTimer } from  '../util/timer';
-
 import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
+import { ThemeState, ThemeActions, SET_THEME } from './types';
+
+import { Default } from '../util/theme';
+
+const initialThemeState: ThemeState = {
+    active: Default
+}
+
+const themeReducer = (
+    state = initialThemeState,
+    action: ThemeActions) : ThemeState => {
+
+    switch (action.type) {
+        case SET_THEME: 
+            return {
+                ...state,
+                active: action.theme
+            }
+    }
+
+    return state;
+}
 
 const initialQueueState: QueueState = {
     timers: [],
@@ -84,7 +104,8 @@ const queueReducer = (
 }
 
 const rootReducer = combineReducers({
-    queue: queueReducer
+    queue: queueReducer,
+    theme: themeReducer
 });
 
 const persistConfig = {
