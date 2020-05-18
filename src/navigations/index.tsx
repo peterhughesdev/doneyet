@@ -26,7 +26,7 @@ export const AppContainer = () => {
     return (
         <SafeAreaProvider>
             <NavigationContainer>
-                <Drawer.Navigator initialRouteName="Main" drawerContent={() => <SideDrawer />}>
+                <Drawer.Navigator initialRouteName="Main" drawerContent={(props) => <SideDrawer {...props} />}>
                     <Drawer.Screen name="Main" component={Main} />
                 </Drawer.Navigator>
             </NavigationContainer>

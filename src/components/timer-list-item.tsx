@@ -2,10 +2,12 @@
 import React from 'react';
 
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { useSelector } from  'react-redux';
 import { useSpring, animated } from 'react-spring/native'
 
 import { Layout as Spacing, Colours, Typography } from '../styles';
 import { getLabel, Timer } from '../util/timer';
+import { RootState }  from '../store';
 
 import { Ionicons } from  '@expo/vector-icons';
 
@@ -19,10 +21,11 @@ const AnimatedView = animated(View);
 
 export const TimerListItem = (props: TimerListItemProps) => {
     const slideFadeIn = useSpring({ opacity: 1, translateY: 0, from: { opacity: 0, translateY: 50 }, config: { tension: 100 }});
+    const theme = useSelector((state: RootState) => state.theme.active);
 
     const label = getLabel(props.timer);
 
-    const repeatIconStyle = props.timer.repeats ? styles.repeatIconActive : styles.repeatIcon;
+    
     const toggleRepeat = () => props.toggleRepeat(props.timer);
 
     const animatedStyle = {
@@ -33,14 +36,35 @@ export const TimerListItem = (props: TimerListItemProps) => {
         }]
     };
 
+    const themed = StyleSheet.create({
+        queueItem: {
+            ...styles.queueItem,
+            backgroundColor: theme.item
+        },
+        queueItemText: {
+            ...styles.queueItemText,
+            color: theme.textSecondary
+        },
+        repeatIconActive: {
+            ...styles.repeatIconActive,
+            color: theme.iconActive
+        },
+        repeatIcon: {
+            ...styles.repeatIcon,
+            color: theme.iconInactive
+        }
+    });
+
+    const repeatIconStyle = props.timer.repeats ? themed.repeatIconActive : themed.repeatIcon;
+
     return (        
         <AnimatedView style={animatedStyle}>
-            <TouchableOpacity style={styles.queueItem} onLongPress={props.drag}>
+            <TouchableOpacity style={themed.queueItem} onLongPress={props.drag}>
                 <TouchableOpacity style={styles.queueItemIcon} onPressOut={toggleRepeat}>
                     <Ionicons name='ios-repeat' style={repeatIconStyle} />
                 </TouchableOpacity>
                 
-                <Text style={styles.queueItemText}>{label}</Text>
+                <Text style={themed.queueItemText}>{label}</Text>
 
                 <View style={styles.queueItemIcon}>
                     
@@ -71,12 +95,10 @@ const styles = StyleSheet.create({
         flex: 1
     },
     repeatIcon: {
-        color: Colours.modalBackdrop,
         paddingHorizontal: 15,
         fontSize: 25
     },
     repeatIconActive: {
-        color: Colours.paleBright,
         paddingHorizontal: 15,
         fontSize: 25
     },

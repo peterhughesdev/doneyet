@@ -2,28 +2,30 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Typography, Layout, Colours } from '../styles';
+import { Typography, Layout } from '../styles';
 import { setTheme } from '../store/actions';
 import { RootState } from '../store';
 
 import { Pallette } from './pallette';
 
-import { Theme, Default, Alt1, Alt2 } from '../util/theme';
+import { Theme, Default, Alt1 } from '../util/theme';
 
-export const SideDrawer = () => {
+export const SideDrawer = ({ navigation } : { navigation:  any}) => {
     const themes = [Default, Alt1];
-    const active = useSelector((state: RootState) => state.theme.active);
+    
+    const theme = useSelector((state: RootState) => state.theme.active);
 
     const dispatch = useDispatch();
 
     const selectTheme = (theme: Theme) => {
         dispatch(setTheme(theme));
+        navigation.closeDrawer();
     }
 
     const styles = StyleSheet.create({
         container: {
             ...Layout.fullHeight,
-            backgroundColor: active.backgroundCool,
+            backgroundColor: theme.backgroundDrawer,
             paddingTop: 100,
             position: 'absolute',
             left: 0,

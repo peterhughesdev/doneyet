@@ -14,3 +14,4 @@ export const transparent = 'rgba(0, 0, 0, 0)';
 export const modalBackdrop = 'rgba(0, 0, 0, 0.5)';
 
 
+export const pink = '#f7a8a8';

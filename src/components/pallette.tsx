@@ -7,11 +7,11 @@ import { Theme } from '../util/theme';
 export const Pallette = ({ theme, onPress } : { theme: Theme, onPress: () => void}) => {
     return (
         <TouchableOpacity style={styles.pallette} onPress={onPress}>
-            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundCool }]}></View>
-            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundWarm }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundTop }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.backgroundBottom }]}></View>
+            <View style={[styles.palletteBox, { backgroundColor: theme.item }]}></View>
             <View style={[styles.palletteBox, { backgroundColor: theme.textPrimary }]}></View>
             <View style={[styles.palletteBox, { backgroundColor: theme.textSecondary }]}></View>
-            <View style={[styles.palletteBox, { backgroundColor: theme.accent }]}></View>
         </TouchableOpacity>
     );
 }

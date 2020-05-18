@@ -1,37 +1,49 @@
 import { Colours } from '../styles';
 
 export interface Theme {
-    backgroundWarm: string,
-    backgroundCool: string
-    textPrimary: string
+    backgroundTop: string,
+    backgroundBottom: string,
+    backgroundDrawer: string,
+
+    textPrimary: string,
     textSecondary: string,
-    accent: string,
+
+    iconInactive: string,
+    iconActive: string,
+
+    item: string,
+
     name: string
 }
 
 export const Default: Theme = {
     name: "default",
-    backgroundWarm: Colours.paleWarm,
-    backgroundCool: Colours.paleCool,
+
+    backgroundTop: Colours.paleWarm,
+    backgroundBottom: Colours.accent,
+    backgroundDrawer: Colours.paleCool,
+
     textPrimary: Colours.text,
     textSecondary: Colours.paleCool,
-    accent: Colours.accent
+
+    iconInactive: Colours.modalBackdrop,
+    iconActive: Colours.paleBright,
+
+    item: Colours.accent
 }
 
 export const Alt1: Theme = {
-    name: "alt 1",
-    backgroundWarm: Colours.accent,
-    backgroundCool: Colours.accent,
-    textPrimary: Colours.queue3,
-    textSecondary: Colours.paleCool,
-    accent: Colours.queue4
-}
+    name: "rose pink",
 
-export const Alt2: Theme = {
-    name: "alt 2",
-    backgroundWarm: Colours.accent,
-    backgroundCool: Colours.accent,
+    backgroundTop: Colours.pink,
+    backgroundBottom: Colours.paleBright,
+    backgroundDrawer: Colours.paleBright,
+
     textPrimary: Colours.queue3,
-    textSecondary: Colours.paleCool,
-    accent: Colours.queue4
+    textSecondary: Colours.text,
+
+    iconInactive: Colours.modalBackdrop,
+    iconActive: Colours.queue3,
+
+    item: Colours.paleBright
 }
