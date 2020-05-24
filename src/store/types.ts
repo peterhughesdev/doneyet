@@ -1,9 +1,7 @@
 import { Timer } from  '../util/timer';
-import { Theme } from '../util/theme';
-
 
 export interface ThemeState {
-    active: Theme
+    active: string
 }
 
 export interface QueueState {
@@ -15,7 +13,7 @@ export const SET_THEME = 'SET_THEME';
 
 interface SetThemeAction {
     type: typeof SET_THEME,
-    theme: Theme
+    theme: string
 }
 
 export type ThemeActions = SetThemeAction;

@@ -1,11 +1,10 @@
 import React from 'react';
 
 import { StyleSheet } from 'react-native';
-import { useSelector } from  'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { RootState }  from '../store';
-import { Colours, Layout } from '../styles';
+import { Layout } from '../styles';
+import { useTheme  } from '../util/theme';
 
 const styles = StyleSheet.create({
     fullScreen: {
@@ -18,7 +17,7 @@ const styles = StyleSheet.create({
 });
 
 export const BackgroundGradient = () => {
-    const theme = useSelector((state: RootState) => state.theme.active);
+    const theme = useTheme();
 
     return (
         <LinearGradient style={styles.fullScreen} colors={[theme.backgroundTop, theme.backgroundBottom]} />

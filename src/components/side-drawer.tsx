@@ -8,12 +8,12 @@ import { RootState } from '../store';
 
 import { Pallette } from './pallette';
 
-import { Theme, Default, Alt1 } from '../util/theme';
+import { useTheme, Theme, Default, Alt1 } from '../util/theme';
 
 export const SideDrawer = ({ navigation } : { navigation:  any}) => {
     const themes = [Default, Alt1];
     
-    const theme = useSelector((state: RootState) => state.theme.active);
+    const theme = useTheme();
 
     const dispatch = useDispatch();
 

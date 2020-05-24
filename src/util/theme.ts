@@ -1,4 +1,17 @@
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 import { Colours } from '../styles';
+
+export const useTheme = () => {
+    const theme = useSelector((state: RootState) => state.theme.active);
+
+    switch (theme) {
+        case 'rose pink':
+            return Alt1;
+        default:
+            return Default;
+    }
+}
 
 export interface Theme {
     backgroundTop: string,

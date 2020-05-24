@@ -6,10 +6,8 @@ import { AsyncStorage } from 'react-native';
 import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
 import { ThemeState, ThemeActions, SET_THEME } from './types';
 
-import { Default } from '../util/theme';
-
 const initialThemeState: ThemeState = {
-    active: Default
+    active: 'default'
 }
 
 const themeReducer = (

@@ -7,7 +7,7 @@ import { TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, RE
 export const setTheme = (theme: Theme) : ThemeActions => {
     return  {
         type: SET_THEME,
-        theme
+        theme: theme.name
     }
 }
 

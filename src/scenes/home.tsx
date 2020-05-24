@@ -12,6 +12,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { toggleRepeat, addTimer, removeTimer, scheduleTimer, reorderQueue } from '../store/actions'
 import { RootState } from '../store';
 
+import { useTheme }  from '../util/theme';
+
 import { BackgroundGradient } from '../components/background-gradient';
 import { ActionButton } from '../components/action-button';
 import { SceneTitle } from '../components/scene-title';
@@ -26,6 +28,7 @@ export const HomeScreen = () => {
     const [hours, setHours] = useState<number>(0);
 
     const dispatch = useDispatch();
+    const theme = useTheme();
    
     let dropdown: any;
 
@@ -42,7 +45,7 @@ export const HomeScreen = () => {
 
     const queueTimer = () => {
         if (dropdown) {
-            dropdown.alertWithType('info', 'Added to queue!', `Added a timer for ${label} to queue`);
+            dropdown.alertWithType('info', 'Queued!', `Added a timer for ${label} to queue`);
         }
 
         dispatch(addTimer(timer));
@@ -66,6 +69,10 @@ export const HomeScreen = () => {
 
     const toggleTimerRepeat = (timer: Timer) => {
         dispatch(toggleRepeat(timer));
+    }
+
+    const popdownText = {
+        color: theme.textSecondary 
     }
 
     return (
@@ -93,7 +100,7 @@ export const HomeScreen = () => {
                 <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
             </View>
 
-            <DropdownAlert ref={setDropdown} infoColor={Colours.background} />
+            <DropdownAlert ref={setDropdown} translucent={true} infoColor={theme.backgroundBottom} titleStyle={popdownText}  messageStyle={popdownText} />
         </View>
     );
 };

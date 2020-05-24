@@ -2,12 +2,11 @@
 import React from 'react';
 
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { useSelector } from  'react-redux';
 import { useSpring, animated } from 'react-spring/native'
 
 import { Layout as Spacing, Colours, Typography } from '../styles';
-import { getLabel, Timer } from '../util/timer';
-import { RootState }  from '../store';
+import { getLabel } from '../util/timer';
+import { useTheme }  from '../util/theme';
 
 import { Ionicons } from  '@expo/vector-icons';
 
@@ -21,11 +20,10 @@ const AnimatedView = animated(View);
 
 export const TimerListItem = (props: TimerListItemProps) => {
     const slideFadeIn = useSpring({ opacity: 1, translateY: 0, from: { opacity: 0, translateY: 50 }, config: { tension: 100 }});
-    const theme = useSelector((state: RootState) => state.theme.active);
+    const theme = useTheme();
 
     const label = getLabel(props.timer);
 
-    
     const toggleRepeat = () => props.toggleRepeat(props.timer);
 
     const animatedStyle = {
