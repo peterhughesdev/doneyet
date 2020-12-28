@@ -21,8 +21,8 @@ export const establishNotifications = async (cb: () => void ) => {
     });
 }
 
-export const scheduleNotification = async (seconds: number, repeat: boolean, title: string, body: string) => {
-    const notification = {
+export const scheduleNotification = async (seconds: number, repeats: boolean, title: string, body: string) => {
+    const notification: Notifications.NotificationRequestInput = {
         content: {
             title,
             body,
@@ -33,7 +33,7 @@ export const scheduleNotification = async (seconds: number, repeat: boolean, tit
         },
         trigger: {
             seconds,
-            repeat
+            repeats
         }
     };
 

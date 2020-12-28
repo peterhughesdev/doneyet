@@ -52,6 +52,10 @@ export const getLabelFromSeconds = (time: number) : string => {
 }
 
 export const getLabel = (timer: Timer) : string => {
+    if (timer.name) {
+        return timer.name;
+    }
+    
     return getLabelFromParts(timer.seconds, timer.minutes, timer.hours);
 }
 

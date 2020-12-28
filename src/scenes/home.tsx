@@ -38,10 +38,9 @@ export const HomeScreen = ({ navigation, route } : Props) => {
     const setDropdown = (ref: any) => dropdown = ref;
 
     const timersRunning = hasRunningTimers(timers);
-    const totalTime = getLabelFromSeconds(timers.map(getTotalSeconds).reduce((prev, curr) => prev + curr));
+    const totalTime = getLabelFromSeconds(timers.map(getTotalSeconds).reduce((prev, curr) => prev + curr, 0));
 
     const timer = createTimer(seconds, minutes, hours);
-    const label = getLabel(timer);
 
     const reorderTimers = (timers: Timer[]) => {
         dispatch(reorderQueue(timers));

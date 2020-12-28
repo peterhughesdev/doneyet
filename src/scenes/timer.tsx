@@ -18,8 +18,9 @@ import { Layout, Typography } from '../styles';
 
 export const TimerScreen = ({ navigation, route } : Props) => {
     const timer = route.params?.timer;
-
-    const [name, setName] = useState(getLabel(timer));
+    const label = getLabel(timer);
+    
+    const [name, setName] = useState(label);
     const dispatch = useDispatch();
     const theme = useTheme();
 
@@ -27,8 +28,8 @@ export const TimerScreen = ({ navigation, route } : Props) => {
     const confirm = () => {
         if (timer) {
             dispatch(addTimer({
-                name: name,
-                ...timer
+                ...timer,
+                name
             }));
         }
 
@@ -55,7 +56,7 @@ export const TimerScreen = ({ navigation, route } : Props) => {
     return (
         <View style={styles.container}>
              <View style={themed.modal}>
-                <SceneTitle title={"Queue Timer"} />
+                <SceneTitle title='Set Timer' subtitle={'Timer: ' + label} />
 
                 <View style={styles.input}>
                     <NameInput value={name} onChange={setName} />
@@ -82,6 +83,7 @@ const styles =  StyleSheet.create({
         justifyContent: "flex-start"
     },
     input: {
+       marginTop: 40, 
        marginHorizontal: 20
     },
     buttons: {
