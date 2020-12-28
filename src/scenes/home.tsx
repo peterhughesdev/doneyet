@@ -23,26 +23,12 @@ import { TimerList } from '../components/timer-list';
 import { Props } from '../navigations/props';
 import { SectionTitle } from '../components/section-title';
 import { useInterval } from '../util/interval';
-
-const getTotalRemainingTime = (timers: Timer[]) : number => {
-    const now = Date.now();
-
-    timers.map(timer => {
-        if (timer.scheduled.length > 0) {
-            timer.scheduled[timer.scheduled.length - 1].start
-        } else {
-            return timer.
-        }
-        
-    })
-}
-
+]
 export const HomeScreen = ({ navigation, route } : Props) => {
     const timers = useSelector((state: RootState) => state.queue.timers);
 
     const [timersRunning, setHasTimersRunning] = useState<boolean>(hasRunningTimers(timers));
-    const [totalTime, setTotalTime] = useState<String>("");
-
+ 
     useInterval(() => {
        setHasTimersRunning(hasRunningTimers(timers));
     }, timersRunning ? 1000 : null);
