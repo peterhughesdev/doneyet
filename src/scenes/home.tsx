@@ -22,9 +22,30 @@ import { TimerList } from '../components/timer-list';
 
 import { Props } from '../navigations/props';
 import { SectionTitle } from '../components/section-title';
+import { useInterval } from '../util/interval';
+
+const getTotalRemainingTime = (timers: Timer[]) : number => {
+    const now = Date.now();
+
+    timers.map(timer => {
+        if (timer.scheduled.length > 0) {
+            timer.scheduled[timer.scheduled.length - 1].start
+        } else {
+            return timer.
+        }
+        
+    })
+}
 
 export const HomeScreen = ({ navigation, route } : Props) => {
     const timers = useSelector((state: RootState) => state.queue.timers);
+
+    const [timersRunning, setHasTimersRunning] = useState<boolean>(hasRunningTimers(timers));
+    const [totalTime, setTotalTime] = useState<String>("");
+
+    useInterval(() => {
+       setHasTimersRunning(hasRunningTimers(timers));
+    }, timersRunning ? 1000 : null);
 
     const [seconds, setSeconds] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
@@ -37,7 +58,6 @@ export const HomeScreen = ({ navigation, route } : Props) => {
 
     const setDropdown = (ref: any) => dropdown = ref;
 
-    const timersRunning = hasRunningTimers(timers);
     const totalTime = getLabelFromSeconds(timers.map(getTotalSeconds).reduce((prev, curr) => prev + curr, 0));
 
     const timer = createTimer(seconds, minutes, hours);
@@ -55,6 +75,8 @@ export const HomeScreen = ({ navigation, route } : Props) => {
     }
 
     const handleStart = () => {
+        setHasTimersRunning(true);
+
         scheduleTimers(timers, (timer, id) => {
             dispatch(scheduleTimer(timer.id, id));
         });

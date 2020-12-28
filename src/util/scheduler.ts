@@ -58,35 +58,40 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
 export const hasRunningTimers = (timers: Timer[]) : boolean => {
     const now = Date.now();
 
-    return timers.filter(timer => timer.scheduled.filter(schedule => {
-        return schedule.start + getTotalSeconds(timer) > now;
-    }).length).length > 0;
+    return timers.filter(timer => {
+        const lengthInMillis = getTotalSeconds(timer) * 1000;
+        return timer.scheduled.filter(schedule => schedule.start + lengthInMillis > now).length > 0;
+    }).length > 0;
 }
 
 export const scheduleTimers = (timers: Timer[], onScheduled: (timer: Timer, id: string) => void) => {
-    timers.reduce((accumulated, timer) => {
-        const addSchedule = (id: string) => onScheduled(timer, id);
-        const seconds = getTotalSeconds(timer);
-        const body = `${seconds} has elapsed`; 
+    timers.forEach(timer => {
+        onScheduled(timer, 't' + Date.now());
+    });
 
-        if (timer.repeats) {
-            if (seconds >= 60) {
-                scheduleNotification(seconds, true, title, body).then(addSchedule);
-            } else {
-                iterateIntervalSequence(seconds, (timeout, intervalRepeat) => {
-                    scheduleNotification(timeout, intervalRepeat, title, body).then(addSchedule);
-                });
-            }
+    // timers.reduce((accumulated, timer) => {
+    //     const addSchedule = (id: string) => onScheduled(timer, id);
+    //     const seconds = getTotalSeconds(timer);
+    //     const body = `${seconds} has elapsed`; 
 
-            return accumulated;
-        } else {
-            const offset = accumulated + seconds;
+    //     if (timer.repeats) {
+    //         if (seconds >= 60) {
+    //             scheduleNotification(seconds, true, title, body).then(addSchedule);
+    //         } else {
+    //             iterateIntervalSequence(seconds, (timeout, intervalRepeat) => {
+    //                 scheduleNotification(timeout, intervalRepeat, title, body).then(addSchedule);
+    //             });
+    //         }
 
-            scheduleNotification(offset, false, title, body).then(addSchedule);
+    //         return accumulated;
+    //     } else {
+    //         const offset = accumulated + seconds;
 
-            return offset;
-        }
-    }, 0);
+    //         scheduleNotification(offset, false, title, body).then(addSchedule);
+
+    //         return offset;
+    //     }
+    // }, 0);
 }
 
 export const unscheduleTimers = (timers: Timer[]) => {
