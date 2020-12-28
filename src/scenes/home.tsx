@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
 
 import { intervals, scheduleTimers, unscheduleTimer, unscheduleTimers, hasRunningTimers } from '../util/scheduler';
-import { createTimer, getLabel, Timer } from '../util/timer';
+import { createTimer, getLabel, getLabelFromSeconds, getTotalSeconds, Timer } from '../util/timer';
 
 import { Layout as Spacing, Colours } from '../styles';
 
@@ -21,6 +21,7 @@ import { TimePicker } from '../components/time-picker';
 import { TimerList } from '../components/timer-list';
 
 import { Props } from '../navigations/props';
+import { SectionTitle } from '../components/section-title';
 
 export const HomeScreen = ({ navigation, route } : Props) => {
     const timers = useSelector((state: RootState) => state.queue.timers);
@@ -37,6 +38,7 @@ export const HomeScreen = ({ navigation, route } : Props) => {
     const setDropdown = (ref: any) => dropdown = ref;
 
     const timersRunning = hasRunningTimers(timers);
+    const totalTime = getLabelFromSeconds(timers.map(getTotalSeconds).reduce((prev, curr) => prev + curr));
 
     const timer = createTimer(seconds, minutes, hours);
     const label = getLabel(timer);
@@ -100,6 +102,7 @@ export const HomeScreen = ({ navigation, route } : Props) => {
 
             <View style={styles.queue}>
                 <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
+                <SectionTitle title={totalTime} />
             </View>
 
             <DropdownAlert ref={setDropdown} translucent={true} infoColor={theme.backgroundBottom} titleStyle={popdownText}  messageStyle={popdownText} />

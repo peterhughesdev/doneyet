@@ -1,6 +1,6 @@
 
 import { scheduleNotification, cancelNotification, cancelAllNotifications } from '../util/notifications';
-import { getTotalSeconds, Timer, Schedule } from './timer';
+import { getTotalSeconds, Timer } from './timer';
 
 const title = "Do the thing NOW...";
 
