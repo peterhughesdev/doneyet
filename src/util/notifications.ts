@@ -1,19 +1,21 @@
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 
 import * as Permissions from './permissions';
 
 export const establishNotifications = async (cb: () => void ) => {
     await Permissions.registerForUserFacingNotificationsAsync();
 
-    await Notifications.createCategoryAsync('repeating', [{
-        actionId: 'stopRepeating',
+    await Notifications.setNotificationCategoryAsync('repeating', [{
+        identifier: 'stopRepeating',
         buttonTitle: 'Stop timer',
-        isDestructive: true,
-        isAuthenticationRequired: false,
+        options: {
+            isDestructive: true,
+            isAuthenticationRequired: false,
+        }
     }]);
 
-    Notifications.addListener((notification: any) => {
-        if (notification.actionId && notification.actionId === 'stopRepeating') {
+    Notifications.addNotificationResponseReceivedListener(response => {
+        if (response.actionIdentifier === 'stopRepeating') {
             cb();
         }
     });
@@ -21,22 +23,21 @@ export const establishNotifications = async (cb: () => void ) => {
 
 export const scheduleNotification = async (seconds: number, repeat: boolean, title: string, body: string) => {
     const notification = {
-        title: title,
-        body: body,
-        data: {
-            time: seconds
+        content: {
+            title,
+            body,
+            data: {
+                time: seconds
+            },
+            categoryIdentifier: 'repeating'
         },
-        categoryId: 'repeating',
-        ios: {
-            sound: true,
-            _displayInForeground: true
+        trigger: {
+            seconds,
+            repeat
         }
     };
 
-    return Notifications.scheduleNotificationWithTimerAsync(notification, {
-        interval: seconds * 1000,
-        repeat: repeat
-    });
+    return Notifications.scheduleNotificationAsync(notification);
 }
 
 export const cancelNotification = async (registration: string) => {

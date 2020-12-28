@@ -7,7 +7,7 @@ import { default as customTheme } from './src/themes/index.json';
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
-import { stopTimer } from './src/store/actions';
+
 import { store, persistor } from './src/store';
 
 import { establishNotifications, cancelAllNotifications } from './src/util/notifications';
@@ -17,7 +17,6 @@ export default function App() {
 
   establishNotifications(() => {
     cancelAllNotifications();
-    store.dispatch(stopTimer());
   });
 
   return (
