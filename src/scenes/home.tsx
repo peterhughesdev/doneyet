@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import DropdownAlert from 'react-native-dropdownalert';
@@ -20,7 +20,9 @@ import { SceneTitle } from '../components/scene-title';
 import { TimePicker } from '../components/time-picker';
 import { TimerList } from '../components/timer-list';
 
-export const HomeScreen = () => {
+import { Props } from '../navigations/props';
+
+export const HomeScreen = ({ navigation, route } : Props) => {
     const timers = useSelector((state: RootState) => state.queue.timers);
 
     const [seconds, setSeconds] = useState<number>(0);
@@ -43,11 +45,11 @@ export const HomeScreen = () => {
         dispatch(reorderQueue(timers));
     }
 
-    const queueTimer = () => {
-        if (dropdown) {
-            dropdown.alertWithType('info', 'Queued!', `Added a timer for ${label} to queue`);
-        }
+    const editTimer = () => {
+        navigation.navigate('Timer', { timer });
+    }
 
+    const queueTimer = () => {
         dispatch(addTimer(timer));
     }
 
@@ -93,7 +95,7 @@ export const HomeScreen = () => {
                     (<ActionButton onPress={handleStart} title='Start' active={timers.length > 0} />)
                 }
                 
-                <ActionButton onPress={queueTimer} title='Queue' active={seconds + minutes + hours > 0} />
+                <ActionButton onPress={queueTimer} onLongPress={editTimer} title='Queue' active={seconds + minutes + hours > 0} />
             </View>
 
             <View style={styles.queue}>

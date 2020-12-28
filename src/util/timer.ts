@@ -8,19 +8,21 @@ export interface Timer {
     seconds: number,
     minutes: number,
     hours: number,
+    name: string,
     thread: number,
     repeats: boolean,
     scheduled: Schedule[]
 }
 
-export const createTimer = (seconds: number, minutes: number = 0,  hours: number = 0) : Timer => {
+export const createTimer = (seconds: number, minutes: number = 0,  hours: number = 0, name = "") : Timer => {
     const id = 'timer:' + Date.now();
-
+    
     return {
         id,
         seconds,
         minutes,
         hours,
+        name,
         thread: 0,
         repeats: false,
         scheduled: []
