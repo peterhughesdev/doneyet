@@ -1,48 +1,35 @@
-export interface Schedule {
-    start: number,
-    id: string
-}
-
 export interface Timer {
     id: string,
-    seconds: number,
-    minutes: number,
-    hours: number,
+    time: number,
     name: string,
     thread: number,
-    repeats: boolean,
-    scheduled: Schedule[]
+    repeats: boolean
 }
 
-export const createTimer = (seconds: number, minutes: number = 0,  hours: number = 0, name = "") : Timer => {
+export const createTimer = (seconds: number, minutes: number = 0, hours: number = 0, name = "") : Timer => {
     const id = 'timer:' + Date.now();
     
+    const time = seconds + (minutes * 60) + (hours *  60 * 60);
+
     return {
         id,
-        seconds,
-        minutes,
-        hours,
+        time,
         name,
         thread: 0,
-        repeats: false,
-        scheduled: []
-    }
+        repeats: false
+    };
 }
 
 export const getTotalSecondsForTimers = (timers: Timer[]) : number => {
-    return timers.map(getTotalSeconds).reduce((a, b) => a + b, 0);
+    return timers.map(timer => timer.time).reduce((a, b) => a + b, 0);
 }
 
-export const getTotalSeconds = (timer: Timer) : number => {
-    return timer.seconds + (timer.minutes * 60) + (timer.hours * 60 * 60);
-}
-
-export const hourFromSeconds = (seconds: number) : number => {
-    return Math.max(Math.floor(seconds / 60 / 60), 0);
-}
-
-export const minutesFromSeconds = (seconds: number) : number => {
-    return Math.max(Math.floor(seconds / 60 / 60), 0);
+export const getLabel = (timer: Timer) : string => {
+    if (timer.name) {
+        return timer.name;
+    }
+    
+    return getLabelFromSeconds(timer.time);
 }
 
 export const getLabelFromSeconds = (time: number) : string => {
@@ -52,18 +39,10 @@ export const getLabelFromSeconds = (time: number) : string => {
     const minutes = Math.floor(remainer / 60);
     const seconds = remainer - minutes * 60;
 
-    return getLabelFromParts(seconds, minutes, hours);
+    return formatLabelParts(seconds, minutes, hours);
 }
 
-export const getLabel = (timer: Timer) : string => {
-    if (timer.name) {
-        return timer.name;
-    }
-    
-    return getLabelFromParts(timer.seconds, timer.minutes, timer.hours);
-}
-
-const getLabelFromParts = (seconds: number, minutes?: number, hours?: number): string => {
+const formatLabelParts = (seconds: number, minutes?: number, hours?: number): string => {
     const parts: string[] = [];
 
     if (hours) {

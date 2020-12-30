@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import DropdownAlert from 'react-native-dropdownalert';
 
-import { intervals, unscheduleTimer, unscheduleTimers, hasRunningTimers } from '../util/scheduler';
-import { createTimer, getLabel, getLabelFromSeconds, getTotalSeconds, getTotalSecondsForTimers, Timer } from '../util/timer';
+import { intervals } from '../util/scheduler';
+import { createTimer, getLabelFromSeconds, getTotalSecondsForTimers, Timer } from '../util/timer';
 
 import { Layout as Spacing, Colours } from '../styles';
 
@@ -81,7 +81,7 @@ export const HomeScreen = ({ navigation, route } : Props) => {
     }
 
     const handleStart = () => {
-        setRemainingScheduledTime(totalScheduledTime);
+        setRemainingScheduledTime(totalQueuedTimeInSeconds);
         dispatch(scheduleTimers(timers));
     }
 
