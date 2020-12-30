@@ -5,7 +5,7 @@ import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { useSpring, animated } from 'react-spring/native'
 
 import { Layout as Spacing, Colours, Typography } from '../styles';
-import { getLabel } from '../util/timer';
+import { getLabel, getLabelFromSeconds } from '../util/timer';
 import { useTheme }  from '../util/theme';
 
 import { Ionicons } from  '@expo/vector-icons';
@@ -23,6 +23,7 @@ export const TimerListItem = (props: TimerListItemProps) => {
     const theme = useTheme();
 
     const label = getLabel(props.timer);
+    const sublabel = props.timer.name ? getLabelFromSeconds(props.timer.time) : "";
 
     const toggleRepeat = () => props.toggleRepeat(props.timer);
 
@@ -65,7 +66,7 @@ export const TimerListItem = (props: TimerListItemProps) => {
                 <Text style={themed.queueItemText}>{label}</Text>
 
                 <View style={styles.queueItemIcon}>
-                    
+                    <Text style={styles.queueItemSubtext}>{ sublabel }</Text>
                 </View>
             </TouchableOpacity>
         </AnimatedView>  
@@ -90,14 +91,17 @@ const styles = StyleSheet.create({
     },
     queueItemIcon: {
         justifyContent: 'center',
+        paddingHorizontal: 15,
         flex: 1
     },
+    queueItemSubtext: {
+        textAlign: 'center',
+        width: 50
+    },
     repeatIcon: {
-        paddingHorizontal: 15,
         fontSize: 25
     },
     repeatIconActive: {
-        paddingHorizontal: 15,
         fontSize: 25
     },
     queueItemText:  {
