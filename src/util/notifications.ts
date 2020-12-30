@@ -19,6 +19,14 @@ export const establishNotifications = async (cb: () => void ) => {
             cb();
         }
     });
+
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+    });
 }
 
 export const scheduleNotification = async (seconds: number, repeats: boolean, title: string, body: string) => {

@@ -3,20 +3,20 @@ import React from 'react';
 import { AppContainer } from './src/navigations';
 
 import { StatusBar } from 'react-native';
-import { default as customTheme } from './src/themes/index.json';
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 
 import { store, persistor } from './src/store';
 
-import { establishNotifications, cancelAllNotifications } from './src/util/notifications';
+import { establishNotifications } from './src/util/notifications';
+import { stopTimers } from './src/store/actions';
 
 export default function App() {
   StatusBar.setBarStyle('light-content');
 
   establishNotifications(() => {
-    cancelAllNotifications();
+    store.dispatch(stopTimers());
   });
 
   return (

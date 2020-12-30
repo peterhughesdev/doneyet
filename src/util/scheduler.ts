@@ -1,8 +1,7 @@
 
-import { scheduleNotification, cancelNotification, cancelAllNotifications } from '../util/notifications';
-import { getTotalSeconds, Timer } from './timer';
-
-const title = "Do the thing NOW...";
+import { ScheduleState } from '../store/types';
+import { scheduleNotification, cancelAllNotifications } from '../util/notifications';
+import { getLabelFromSeconds, Timer } from './timer';
 
 type IntervalSequence = {
     once: number[],
@@ -36,7 +35,7 @@ INTERVAL_SEQUENCES.set(60, {
     repeat: [60]
 });
 
-export const seconds = [0, 20, 30, 45];
+export const seconds = [0, 5, 20, 30, 45];
 export const minutes: number[] = Array.from({length: 60}, (x,i) => i);
 export const hours: number[] = [0, 1, 2, 3, 4, 5];
 
@@ -55,81 +54,42 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
     }
 }
 
-export const hasRunningTimers = (timers: Timer[]) : boolean => {
-    const now = Date.now();
+export function schedule(timers: Timer[]): ScheduleState {
+    const start = Date.now();
 
-    return timers.filter(timer => {
-        const lengthInMillis = getTotalSeconds(timer) * 1000;
-        return timer.scheduled.filter(schedule => schedule.start + lengthInMillis > now).length > 0;
-    }).length > 0;
-}
+    timers.reduce((accumulated, timer) => {
+        const name = timer.name ? timer.name : 'Timer';
+        const label = getLabelFromSeconds(timer.time);
 
-export interface Schedule {
-    start: number;
-    timers: number[];
-}
+        const title = `${name} is done`;
+        const body = `${label} has elapsed`;
 
-export const schedule = (timers: Timer[]) : Schedule => {
-    return {
-        start: Date.now(),
-        timers: timers.map(getTotalSeconds)
-    }
-};
+        if (timer.repeats) {
+            if (timer.time >= 60) {
+                scheduleNotification(timer.time, true, title, body);
+            } else {
+                iterateIntervalSequence(timer.time, (timeout, intervalRepeat) => {
+                    scheduleNotification(timeout, intervalRepeat, title, body);
+                });
+            }
 
-export const scheduleTimers = (timers: Timer[], onScheduled: (timer: Timer, id: string) => void) => {
-    timers.forEach(timer => {
-        onScheduled(timer, 't' + Date.now());
-    });
+            return accumulated;
+        } else {
+            const offset = accumulated + timer.time;
 
-    // timers.reduce((accumulated, timer) => {
-    //     const addSchedule = (id: string) => onScheduled(timer, id);
-    //     const seconds = getTotalSeconds(timer);
-    //     const body = `${seconds} has elapsed`; 
+            scheduleNotification(offset, false, title, body);
 
-    //     if (timer.repeats) {
-    //         if (seconds >= 60) {
-    //             scheduleNotification(seconds, true, title, body).then(addSchedule);
-    //         } else {
-    //             iterateIntervalSequence(seconds, (timeout, intervalRepeat) => {
-    //                 scheduleNotification(timeout, intervalRepeat, title, body).then(addSchedule);
-    //             });
-    //         }
-
-    //         return accumulated;
-    //     } else {
-    //         const offset = accumulated + seconds;
-
-    //         scheduleNotification(offset, false, title, body).then(addSchedule);
-
-    //         return offset;
-    //     }
-    // }, 0);
-}
-
-export const unscheduleTimers = (timers: Timer[]) => {
-    cancelAllNotifications();
-
-    const unscheduled = timers.map(timer => {
-        return {
-            ...timer,
-            scheduled: []
+            return offset;
         }
-    });
-
-    return unscheduled;
-}
-
-export const unscheduleTimer = (timer: Timer) =>  {
-    timer.scheduled.forEach(async (schedule) => {
-        try {
-            await cancelNotification(schedule.id);
-        } catch (e) {
-            // no-op
-        }
-    });
+    }, 0);
 
     return {
-        ...timer,
-        scheduled: []
+        running: true,
+        start,
+        timers: [...timers]
     };
+}
+
+export function unschedule(timers: Timer[]) {
+    cancelAllNotifications();
 }

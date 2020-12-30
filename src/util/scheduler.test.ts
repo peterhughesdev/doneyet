@@ -1,5 +1,5 @@
 import { schedule } from './scheduler';
-import { createTimer, getTotalSeconds } from './timer';
+import { createTimer } from './timer';
 
 describe("scheduler", () => {
     const timer1 = createTimer(1, 2, 3, "timer-1");
@@ -12,9 +12,10 @@ describe("scheduler", () => {
         const r = schedule([timer1]);
         
         expect(r).toEqual({
+            running: true,
             start: expect.any(Number),
             timers: [
-                getTotalSeconds(timer1)
+                timer1
             ]
         });
 
@@ -25,11 +26,12 @@ describe("scheduler", () => {
         const r = schedule([timer1, timer2, timer3]);
         
         expect(r).toEqual({
+            running: true,
             start: expect.any(Number),
             timers: [
-                getTotalSeconds(timer1),
-                getTotalSeconds(timer2),
-                getTotalSeconds(timer3)
+                timer1,
+                timer2,
+                timer3
             ]
         });
 

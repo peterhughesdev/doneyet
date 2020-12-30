@@ -5,6 +5,7 @@ import { AsyncStorage } from 'react-native';
 
 import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, REORDER_QUEUE, ScheduleState, ScheduleActions, SCHEDULE_TIMERS, STOP_TIMERS } from './types';
 import { ThemeState, ThemeActions, SET_THEME } from './types';
+import { schedule, unschedule } from '../util/scheduler';
 
 const initialThemeState: ThemeState = {
     active: 'default'
@@ -85,12 +86,10 @@ const scheduleReducer = (
 
     switch (action.type) {
         case SCHEDULE_TIMERS:
-            return {
-                running: true,
-                start: Date.now(),
-                timers: [...action.payload.timers]
-            };
+            return schedule(action.payload.timers);
         case STOP_TIMERS:
+            unschedule(state.timers);
+            
             return {
                 running: false,
                 start: 0,

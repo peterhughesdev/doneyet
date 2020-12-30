@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import DropdownAlert from 'react-native-dropdownalert';
-
 import { getLabelFromSeconds, getTotalSecondsForTimers, Timer } from '../util/timer';
 
-import { Layout as Spacing, Colours } from '../styles';
+import { Layout as Spacing } from '../styles';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleRepeat, removeTimer, reorderQueue, stopTimers } from '../store/actions'
 import { RootState } from '../store';
-
-import { useTheme }  from '../util/theme';
 
 import { BackgroundGradient } from '../components/background-gradient';
 import { SceneTitle } from '../components/scene-title';
@@ -50,11 +46,6 @@ export const HomeScreen = () => {
     const [pendingTimer, setPendingTimer] = useState<number>(0);
     
     const dispatch = useDispatch();
-    const theme = useTheme();
-   
-    let dropdown: any;
-
-    const setDropdown = (ref: any) => dropdown = ref;
 
     const reorderTimers = (timers: Timer[]) => {
         dispatch(reorderQueue(timers));
@@ -66,10 +57,6 @@ export const HomeScreen = () => {
 
     const toggleTimerRepeat = (timer: Timer) => {
         dispatch(toggleRepeat(timer));
-    }
-
-    const popdownText = {
-        color: theme.textSecondary 
     }
 
     return (
@@ -96,8 +83,6 @@ export const HomeScreen = () => {
                     (<SectionTitle title={totalQueuedTimeLabel} />)
                 }
             </View>
-
-            <DropdownAlert ref={setDropdown} translucent={true} infoColor={theme.backgroundBottom} titleStyle={popdownText}  messageStyle={popdownText} />
         </View>
     );
 };
