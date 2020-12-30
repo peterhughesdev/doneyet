@@ -64,6 +64,18 @@ export const hasRunningTimers = (timers: Timer[]) : boolean => {
     }).length > 0;
 }
 
+export interface Schedule {
+    start: number;
+    timers: number[];
+}
+
+export const schedule = (timers: Timer[]) : Schedule => {
+    return {
+        start: Date.now(),
+        timers: timers.map(getTotalSeconds)
+    }
+};
+
 export const scheduleTimers = (timers: Timer[], onScheduled: (timer: Timer, id: string) => void) => {
     timers.forEach(timer => {
         onScheduled(timer, 't' + Date.now());
