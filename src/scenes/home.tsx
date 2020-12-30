@@ -3,13 +3,13 @@ import { StyleSheet, View } from 'react-native';
 
 import DropdownAlert from 'react-native-dropdownalert';
 
-import { intervals, scheduleTimers, unscheduleTimer, unscheduleTimers, hasRunningTimers } from '../util/scheduler';
-import { createTimer, getLabel, getLabelFromSeconds, getTotalSeconds, Timer } from '../util/timer';
+import { intervals, unscheduleTimer, unscheduleTimers, hasRunningTimers } from '../util/scheduler';
+import { createTimer, getLabel, getLabelFromSeconds, getTotalSeconds, getTotalSecondsForTimers, Timer } from '../util/timer';
 
 import { Layout as Spacing, Colours } from '../styles';
 
 import { useSelector, useDispatch } from 'react-redux'
-import { toggleRepeat, addTimer, removeTimer, scheduleTimer, reorderQueue } from '../store/actions'
+import { toggleRepeat, addTimer, removeTimer, scheduleTimers, reorderQueue, stopTimers } from '../store/actions'
 import { RootState } from '../store';
 
 import { useTheme }  from '../util/theme';
@@ -23,15 +23,29 @@ import { TimerList } from '../components/timer-list';
 import { Props } from '../navigations/props';
 import { SectionTitle } from '../components/section-title';
 import { useInterval } from '../util/interval';
-]
+
 export const HomeScreen = ({ navigation, route } : Props) => {
     const timers = useSelector((state: RootState) => state.queue.timers);
+    const schedule = useSelector((state: RootState) => state.schedule);
 
-    const [timersRunning, setHasTimersRunning] = useState<boolean>(hasRunningTimers(timers));
- 
+    const totalScheduledTime = getTotalSecondsForTimers(schedule.timers);
+    const totalQueuedTimeInSeconds = getTotalSecondsForTimers(timers);
+
+    const [remainingScheduledTime, setRemainingScheduledTime] = useState<number>(totalScheduledTime);
+
+    const totalScheduledTimeLabel = getLabelFromSeconds(remainingScheduledTime);
+    const totalQueuedTimeLabel = getLabelFromSeconds(totalQueuedTimeInSeconds);
+
     useInterval(() => {
-       setHasTimersRunning(hasRunningTimers(timers));
-    }, timersRunning ? 1000 : null);
+        const elapsed = Math.floor((Date.now() - schedule.start) / 1000);
+        const remaining = Math.max(totalScheduledTime - elapsed, 0);
+
+        setRemainingScheduledTime(remaining);
+
+        if (remaining <= 0) {
+            dispatch(stopTimers());
+        }
+    }, schedule.running ? 1000 : null);
 
     const [seconds, setSeconds] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
@@ -43,8 +57,6 @@ export const HomeScreen = ({ navigation, route } : Props) => {
     let dropdown: any;
 
     const setDropdown = (ref: any) => dropdown = ref;
-
-    const totalTime = getLabelFromSeconds(timers.map(getTotalSeconds).reduce((prev, curr) => prev + curr, 0));
 
     const timer = createTimer(seconds, minutes, hours);
 
@@ -60,26 +72,21 @@ export const HomeScreen = ({ navigation, route } : Props) => {
         dispatch(addTimer(timer));
     }
 
-    const handleStart = () => {
-        setHasTimersRunning(true);
-
-        scheduleTimers(timers, (timer, id) => {
-            dispatch(scheduleTimer(timer.id, id));
-        });
-    }
-
-    const handleStop = () => {
-        const unscheduled = unscheduleTimers(timers);
-        dispatch(reorderQueue(unscheduled));
-    }
-
     const deleteTimer = (timer: Timer) => {
-        unscheduleTimer(timer);
         dispatch(removeTimer(timer.id));
     }
 
     const toggleTimerRepeat = (timer: Timer) => {
         dispatch(toggleRepeat(timer));
+    }
+
+    const handleStart = () => {
+        setRemainingScheduledTime(totalScheduledTime);
+        dispatch(scheduleTimers(timers));
+    }
+
+    const handleStop = () => {
+        dispatch(stopTimers());
     }
 
     const popdownText = {
@@ -99,7 +106,7 @@ export const HomeScreen = ({ navigation, route } : Props) => {
             </View>
 
             <View style={styles.buttons}>
-                {timersRunning ?
+                {schedule.running ?
                     (<ActionButton onPress={handleStop} title='Stop' /> ) :
                     (<ActionButton onPress={handleStart} title='Start' active={timers.length > 0} />)
                 }
@@ -109,7 +116,10 @@ export const HomeScreen = ({ navigation, route } : Props) => {
 
             <View style={styles.queue}>
                 <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
-                <SectionTitle title={totalTime} />
+                {schedule.running ?
+                    (<SectionTitle title={totalScheduledTimeLabel} />) : 
+                    (<SectionTitle title={totalQueuedTimeLabel} />)
+                }
             </View>
 
             <DropdownAlert ref={setDropdown} translucent={true} infoColor={theme.backgroundBottom} titleStyle={popdownText}  messageStyle={popdownText} />

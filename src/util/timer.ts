@@ -29,6 +29,10 @@ export const createTimer = (seconds: number, minutes: number = 0,  hours: number
     }
 }
 
+export const getTotalSecondsForTimers = (timers: Timer[]) : number => {
+    return timers.map(getTotalSeconds).reduce((a, b) => a + b, 0);
+}
+
 export const getTotalSeconds = (timer: Timer) : number => {
     return timer.seconds + (timer.minutes * 60) + (timer.hours * 60 * 60);
 }

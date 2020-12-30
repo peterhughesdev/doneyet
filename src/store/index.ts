@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 
 import { AsyncStorage } from 'react-native';
 
-import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, SCHEDULE_TIMER, SCHEDULE_QUEUE, REORDER_QUEUE } from './types';
+import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, REORDER_QUEUE, ScheduleState, ScheduleActions, SCHEDULE_TIMERS, STOP_TIMERS } from './types';
 import { ThemeState, ThemeActions, SET_THEME } from './types';
 
 const initialThemeState: ThemeState = {
@@ -20,14 +20,13 @@ const themeReducer = (
                 ...state,
                 active: action.theme
             }
+        default:
+            return state;
     }
-
-    return state;
 }
 
 const initialQueueState: QueueState = {
-    timers: [],
-    scheduledDate: 0
+    timers: []
 }
 
 const queueReducer = (
@@ -69,41 +68,43 @@ const queueReducer = (
                 ...state,
                 timers: state.timers.filter(timer => timer.id != action.payload.id)
             }
-        case SCHEDULE_TIMER: 
-            return {
-                ...state,
-                timers: state.timers.map(timer => {
-                    if (timer.id == action.payload.id) {
-                        const scheduled = timer.scheduled.concat({
-                            start: Date.now(),
-                            id: action.payload.scheduled
-                        });
-
-                        return {
-                            ...timer,
-                            scheduled
-                        }
-                    } else {
-                        return timer;
-                    }
-                })
-            }
-        case SCHEDULE_QUEUE:
-            const future = Date.now() + (action.payload.seconds * 1000);
-
-            return {
-                ...state,
-                scheduledDate: future
-            };
-        
         default: 
+            return state;
+    }
+}
+
+const initialScheduleState: ScheduleState  =  {
+    running: false,
+    start: 0,
+    timers: []
+}
+
+const scheduleReducer = (
+    state = initialScheduleState,
+    action: ScheduleActions) : ScheduleState => {
+
+    switch (action.type) {
+        case SCHEDULE_TIMERS:
+            return {
+                running: true,
+                start: Date.now(),
+                timers: [...action.payload.timers]
+            };
+        case STOP_TIMERS:
+            return {
+                running: false,
+                start: 0,
+                timers: []
+            }
+        default:
             return state;
     }
 }
 
 const rootReducer = combineReducers({
     queue: queueReducer,
-    theme: themeReducer
+    theme: themeReducer,
+    schedule: scheduleReducer
 });
 
 const persistConfig = {

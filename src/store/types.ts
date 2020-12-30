@@ -6,7 +6,12 @@ export interface ThemeState {
 
 export interface QueueState {
     timers: Timer[];
-    scheduledDate: number;
+}
+
+export interface ScheduleState {
+    running: boolean;
+    start: number;
+    timers: Timer[];
 }
 
 export const SET_THEME = 'SET_THEME';
@@ -22,11 +27,8 @@ export const TOGGLE_REPEAT = 'TOGGLE_REPEAT';
 
 export const ADD_TIMER = 'ADD_TIMER';
 export const REMOVE_TIMER = 'REMOVE_TIMER';
-export const SCHEDULE_TIMER = 'SCHEDULE_TIMER'
-
 export const CLEAR_QUEUE = 'CLEAR_QUEUE'
 export const REORDER_QUEUE = 'REORDER_QUEUE'
-export const SCHEDULE_QUEUE = 'SCHEDULE_QUEUE';
 
 interface ToggleRepeatAction {
     type: typeof TOGGLE_REPEAT,
@@ -56,19 +58,20 @@ interface RemoveTimerAction {
     }
 }
 
-interface ScheduleTimerAction {
-    type: typeof SCHEDULE_TIMER,
-    payload: {
-        id: string,
-        scheduled: string
-    }
-}
+export type QueueActions = ToggleRepeatAction | ReorderQueueAction | ClearQueueAction | AddTimerAction | RemoveTimerAction;
 
-interface ScheduleQueueAction {
-    type: typeof SCHEDULE_QUEUE,
-    payload: {
-        seconds: number
-    }
-}
+export const SCHEDULE_TIMERS = 'SCHEDULE_TIMERS';
+export const STOP_TIMERS =  'STOP_TIMERS';
 
-export type QueueActions = ToggleRepeatAction | ReorderQueueAction | ClearQueueAction | AddTimerAction | RemoveTimerAction | ScheduleTimerAction | ScheduleQueueAction;
+interface ScheduleTimersAction {
+    type: typeof SCHEDULE_TIMERS,
+    payload: {
+        timers: Timer[]
+    }
+};
+
+interface StopTimersAction {
+    type: typeof STOP_TIMERS
+};
+
+export type ScheduleActions = ScheduleTimersAction |  StopTimersAction;
