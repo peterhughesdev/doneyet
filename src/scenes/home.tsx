@@ -107,16 +107,6 @@ const styles = StyleSheet.create({
         ...Spacing.vertical,
         paddingTop: 35,
     },
-    spinner: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: 15,
-        backgroundColor: Colours.transparent
-    },
-    pickers: {
-        ...Spacing.row,
-        marginBottom: 30,
-    },
     buttons: {
         ...Spacing.row,
         justifyContent: 'space-between',

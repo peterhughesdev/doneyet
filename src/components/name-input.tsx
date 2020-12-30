@@ -1,7 +1,5 @@
 import React from  'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { Layout, Typography } from '../styles';
-
 import { useTheme } from '../util/theme';
 
 type NameInputProps = {
@@ -16,16 +14,17 @@ export const NameInput = ({ value, onChange } : NameInputProps) => {
         textInput: {
             ...styles.textInput,
             color: theme.textPrimary,
-            backgroundColor: theme.backgroundDrawer
+            borderColor: theme.backgroundTop
         }
     });
 
-    return <TextInput value={value} onChangeText={onChange} style={themed.textInput} />
+    return <TextInput value={value} onChangeText={onChange} style={themed.textInput} autoFocus={true} placeholder={'Custom label'} />
 }   
 
 const styles =  StyleSheet.create({
     textInput: {
         borderRadius: 4,
+        borderWidth: 2,
         padding: 8,
         fontSize: 20
     }

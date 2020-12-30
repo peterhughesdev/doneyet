@@ -20,10 +20,9 @@ export const TimerScreen = ({ navigation, route } : Props) => {
     const timer = route.params?.timer;
     const label = getLabel(timer);
     
-    const [name, setName] = useState(label);
+    const [name, setName] = useState("");
     const dispatch = useDispatch();
     const theme = useTheme();
-
 
     const confirm = () => {
         if (timer) {
@@ -45,7 +44,7 @@ export const TimerScreen = ({ navigation, route } : Props) => {
     const themed = StyleSheet.create({
         modal: {
             ...styles.modal,
-            backgroundColor: theme.item
+            backgroundColor: theme.backgroundDrawer
         },
         timerItemText: {
             ...styles.timerItemText,
