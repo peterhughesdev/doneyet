@@ -62,6 +62,7 @@ export type QueueActions = ToggleRepeatAction | ReorderQueueAction | ClearQueueA
 
 export const SCHEDULE_TIMERS = 'SCHEDULE_TIMERS';
 export const STOP_TIMERS =  'STOP_TIMERS';
+export const PAUSE_TIMERS =  'PAUSE_TIMERS';
 
 interface ScheduleTimersAction {
     type: typeof SCHEDULE_TIMERS,
@@ -74,4 +75,8 @@ interface StopTimersAction {
     type: typeof STOP_TIMERS
 };
 
-export type ScheduleActions = ScheduleTimersAction |  StopTimersAction;
+interface PauseTimersAction {
+    type: typeof PAUSE_TIMERS
+};
+
+export type ScheduleActions = ScheduleTimersAction |  StopTimersAction | PauseTimersAction;

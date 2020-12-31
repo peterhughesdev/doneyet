@@ -1,7 +1,7 @@
 import { Timer } from '../util/timer';
 import { Theme } from '../util/theme';
 
-import { SCHEDULE_TIMERS, SET_THEME, STOP_TIMERS, ThemeActions } from './types';
+import { PAUSE_TIMERS, SCHEDULE_TIMERS, SET_THEME, STOP_TIMERS, ThemeActions } from './types';
 import { TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, REORDER_QUEUE, QueueActions, ScheduleActions } from './types';
 
 export const setTheme = (theme: Theme) : ThemeActions => {
@@ -61,5 +61,11 @@ export const scheduleTimers = (timers: Timer[]) : ScheduleActions => {
 export const stopTimers = () : ScheduleActions => {
     return {
         type: STOP_TIMERS
+    }
+}
+
+export const pauseTimers = () : ScheduleActions => {
+    return {
+        type: PAUSE_TIMERS
     }
 }

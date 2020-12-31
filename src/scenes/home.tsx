@@ -19,6 +19,7 @@ import { StopQueueBtn } from '../components/buttons/stop-queue-btn';
 import { StartQueueBtn } from '../components/buttons/start-queue-btn';
 import { TimerPickers } from '../components/timer-pickers';
 import { AddQueueBtn } from '../components/buttons/add-queue-btn';
+import { PauseQueueBtn } from '../components/buttons/pause-queue-btn';
 
 export const HomeScreen = () => {
     const timers = useSelector((state: RootState) => state.queue.timers);
@@ -69,11 +70,14 @@ export const HomeScreen = () => {
 
             <View style={styles.buttons}>
                 {schedule.running ?
-                    (<StopQueueBtn /> ) :
+                    (<PauseQueueBtn />) :
                     (<StartQueueBtn />)
                 }
-                
-                <AddQueueBtn timer={pendingTimer} />
+
+                {schedule.running ?
+                    (<StopQueueBtn />) :
+                    (<AddQueueBtn timer={pendingTimer} />)
+                }
             </View>
 
             <View style={styles.queue}>
@@ -102,5 +106,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 100,
         height: 400
-    }
+    },
+    modal: {
+        height: 350,
+        width: 400, 
+        backgroundColor: 'white',
+        borderRadius: 10,
+        shadowRadius: 19,
+        shadowColor: 'rgba(0,0,0, 0.9)',
+        alignSelf: 'center',
+        justifyContent: "space-between"
+    },
 });

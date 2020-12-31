@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 
 import { AsyncStorage } from 'react-native';
 
-import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, REORDER_QUEUE, ScheduleState, ScheduleActions, SCHEDULE_TIMERS, STOP_TIMERS } from './types';
+import { QueueState, QueueActions, TOGGLE_REPEAT, CLEAR_QUEUE, ADD_TIMER, REMOVE_TIMER, REORDER_QUEUE, ScheduleState, ScheduleActions, SCHEDULE_TIMERS, STOP_TIMERS, PAUSE_TIMERS } from './types';
 import { ThemeState, ThemeActions, SET_THEME } from './types';
 import { schedule, unschedule } from '../util/scheduler';
 
@@ -94,6 +94,13 @@ const scheduleReducer = (
                 running: false,
                 start: 0,
                 timers: []
+            }
+        case PAUSE_TIMERS:
+            unschedule(state.timers);
+
+            return {
+                ...state,
+                running: false
             }
         default:
             return state;
