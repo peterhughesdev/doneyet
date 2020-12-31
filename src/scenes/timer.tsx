@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, KeyboardAvoidingView } from 'react-native';
 import  { useDispatch } from 'react-redux';
 
 import { addTimer } from '../store/actions';
@@ -53,9 +53,9 @@ export const TimerScreen = ({ navigation, route } : Props) => {
     })
 
     return (
-        <View style={styles.container}>
-             <View style={themed.modal}>
-                <SceneTitle title='Set Timer' subtitle={'Timer: ' + label} />
+        <KeyboardAvoidingView behavior={'padding'} style={styles.container}>
+            <View style={themed.modal}>
+                <SceneTitle title='Add Timer' subtitle={label} />
 
                 <View style={styles.input}>
                     <NameInput value={name} onChange={setName} />
@@ -66,7 +66,7 @@ export const TimerScreen = ({ navigation, route } : Props) => {
                     <ActionButton title="Add" onPress={confirm} />
                 </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -74,12 +74,16 @@ const styles =  StyleSheet.create({
     container: {
         flex: 1, 
         flexDirection: 'column', 
-        justifyContent: 'flex-end'
+        justifyContent: 'center'
     },
     modal: {
-        height: "50%", 
-        width: '100%', 
-        justifyContent: "flex-start"
+        height: 350,
+        width: 400, 
+        borderRadius: 10,
+        shadowRadius: 19,
+        shadowColor: 'rgba(0,0,0, 0.9)',
+        alignSelf: 'center',
+        justifyContent: "space-between"
     },
     input: {
        marginTop: 40, 
