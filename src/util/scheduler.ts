@@ -1,7 +1,7 @@
 
 import { ScheduleState } from '../store/types';
 import { scheduleNotification, cancelAllNotifications } from '../util/notifications';
-import { getLabelFromSeconds, Timer } from './timer';
+import { getLabel, getLabelFromSeconds, getTotalSecondsForTimers, Timer } from './timer';
 
 type IntervalSequence = {
     once: number[],
@@ -56,13 +56,17 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
 
 export function schedule(timers: Timer[]): ScheduleState {
     const start = Date.now();
+    const totalTime = getTotalSecondsForTimers(timers);
 
-    timers.reduce((accumulated, timer) => {
-        const name = timer.name ? timer.name : 'Timer';
-        const label = getLabelFromSeconds(timer.time);
+    timers.reduce((accumulated, timer, idx) => {
+        const name = getLabel(timer, 'Timer');
+        const offset = accumulated + timer.time;
+        const remaining = totalTime - offset;
 
         const title = `${name} is done`;
-        const body = `${label} has elapsed`;
+        const body = (idx < timers.length - 1) ? 
+            `${getLabel(timers[idx + 1])} is next (${getLabelFromSeconds(remaining)} remaining)` :
+            'Timer queue complete';
 
         if (timer.repeats) {
             if (timer.time >= 60) {

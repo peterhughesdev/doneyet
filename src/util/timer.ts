@@ -24,9 +24,13 @@ export const getTotalSecondsForTimers = (timers: Timer[]) : number => {
     return timers.map(timer => timer.time).reduce((a, b) => a + b, 0);
 }
 
-export const getLabel = (timer: Timer) : string => {
+export const getLabel = (timer: Timer, defaultLabel?: string) : string => {
     if (timer.name) {
         return timer.name;
+    }
+
+    if (defaultLabel) {
+        return defaultLabel;
     }
     
     return getLabelFromSeconds(timer.time);
