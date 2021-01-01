@@ -88,7 +88,7 @@ export function schedule(timers: Timer[]): ScheduleState {
     }, 0);
 
     return {
-        running: true,
+        state: 'RUNNING',
         start,
         timers: [...timers]
     };

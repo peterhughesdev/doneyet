@@ -75,7 +75,7 @@ const queueReducer = (
 }
 
 const initialScheduleState: ScheduleState  =  {
-    running: false,
+    state: 'STOPPED',
     start: 0,
     timers: []
 }
@@ -91,7 +91,7 @@ const scheduleReducer = (
             unschedule(state.timers);
             
             return {
-                running: false,
+                state: 'STOPPED',
                 start: 0,
                 timers: []
             }
@@ -100,7 +100,7 @@ const scheduleReducer = (
 
             return {
                 ...state,
-                running: false
+                state: 'PAUSED'
             }
         default:
             return state;

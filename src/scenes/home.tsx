@@ -45,7 +45,7 @@ export const HomeScreen = () => {
         if (remaining <= 0) {
             dispatch(stopTimers());
         }
-    }, schedule.running ? 1000 : null);
+    }, schedule.state === 'RUNNING' ? 1000 : null);
 
     const [pendingTimer, setPendingTimer] = useState<number>(0);
     
@@ -69,18 +69,18 @@ export const HomeScreen = () => {
     }));
 
     useEffect(() => {
-        if (schedule.running) {
-            setPickerProps({
-                opacity: 0,
-                height: 0
-            });
-        } else {
+        if (schedule.state === 'STOPPED') {
             setPickerProps({
                 opacity: 1,
                 height: 140
             });
+        } else {
+            setPickerProps({
+                opacity: 0,
+                height: 0
+            });
         }
-    }, [schedule.running]);
+    }, [schedule.state]);
 
     return (
         <View style={styles.container}>
@@ -93,20 +93,20 @@ export const HomeScreen = () => {
             </AnimatedView>
 
             <View style={styles.buttons}>
-                {schedule.running ?
+                {schedule.state === 'RUNNING' ?
                     (<PauseQueueBtn />) :
                     (<StartQueueBtn />)
                 }
 
-                {schedule.running ?
-                    (<StopQueueBtn />) :
-                    (<AddQueueBtn timer={pendingTimer} />)
+                {schedule.state === 'STOPPED' ?
+                    (<AddQueueBtn timer={pendingTimer} />) :
+                    (<StopQueueBtn />)
                 }
             </View>
 
             <View style={styles.queue}>
                 <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
-                {schedule.running ?
+                {schedule.state === 'RUNNING' ?
                     (<SectionTitle title={totalScheduledTimeLabel} />) : 
                     (<SectionTitle title={totalQueuedTimeLabel} />)
                 }

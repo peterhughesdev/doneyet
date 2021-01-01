@@ -8,8 +8,14 @@ export interface QueueState {
     timers: Timer[];
 }
 
+const RUNNING = 'RUNNING';
+const STOPPED = 'STOPPED';
+const PAUSED = 'PAUSED';
+
+export type ScheduleRunningState = typeof RUNNING | typeof STOPPED | typeof PAUSED;
+
 export interface ScheduleState {
-    running: boolean;
+    state: ScheduleRunningState;
     start: number;
     timers: Timer[];
 }
