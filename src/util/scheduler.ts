@@ -54,16 +54,28 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
     }
 }
 
-export function schedule(timers: Timer[]): ScheduleState {
-    const start = Date.now();
+export function schedule(timers: Timer[], skip: number = 0) {
     const totalTime = getTotalSecondsForTimers(timers);
 
+    // Walk through all timers, accumulating the total time all 
+    // preceeding timers will take.
     timers.reduce((accumulated, timer, idx) => {
-        const name = getLabel(timer, 'Timer');
-        const offset = accumulated + timer.time;
-        const remaining = totalTime - offset;
+        let offset = accumulated + timer.time;
+      
+        // If the accumulated time for all timers including this one
+        // is less than the provided skip, don't schedule any notifications.
+        if (skip > offset) {
+            return offset;
+        }
 
-        const title = `${name} is done`;
+        // If the number of seconds to skip puts us in the middle of a timer,
+        // subtract the difference from calculated offset
+        if (skip > accumulated) {
+            offset - (skip - accumulated);
+        }
+
+        const remaining = totalTime - offset;
+        const title = `${getLabel(timer, 'Timer')} is done`;
         const body = (idx < timers.length - 1) ? 
             `${getLabel(timers[idx + 1])} is next (${getLabelFromSeconds(remaining)} remaining)` :
             'Timer queue complete';
@@ -79,19 +91,10 @@ export function schedule(timers: Timer[]): ScheduleState {
 
             return accumulated;
         } else {
-            const offset = accumulated + timer.time;
-
-            scheduleNotification(offset, false, title, body);
-
+            scheduleNotification(offset - skip, false, title, body);
             return offset;
         }
     }, 0);
-
-    return {
-        state: 'RUNNING',
-        start,
-        timers: [...timers]
-    };
 }
 
 export function unschedule(timers: Timer[]) {

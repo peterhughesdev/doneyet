@@ -106,9 +106,9 @@ export const HomeScreen = () => {
 
             <View style={styles.queue}>
                 <TimerList scheduled={false} timers={timers} deleteTimer={deleteTimer} toggleRepeat={toggleTimerRepeat} onDragEnd={reorderTimers} />
-                {schedule.state === 'RUNNING' ?
-                    (<SectionTitle title={totalScheduledTimeLabel} />) : 
-                    (<SectionTitle title={totalQueuedTimeLabel} />)
+                {schedule.state === 'STOPPED' ?
+                    (<SectionTitle title={totalQueuedTimeLabel} />) :
+                    (<SectionTitle title={totalScheduledTimeLabel} />)
                 }
             </View>
         </View>

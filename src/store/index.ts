@@ -77,6 +77,7 @@ const queueReducer = (
 const initialScheduleState: ScheduleState  =  {
     state: 'STOPPED',
     start: 0,
+    paused: 0,
     timers: []
 }
 
@@ -86,13 +87,30 @@ const scheduleReducer = (
 
     switch (action.type) {
         case SCHEDULE_TIMERS:
-            return schedule(action.payload.timers);
+            let start;
+
+            if (state.state === 'PAUSED') {
+                schedule(action.payload.timers, (state.paused - state.start) / 1000);
+                start = state.start;
+            } else {
+                schedule(action.payload.timers);
+                start = Date.now();
+            }
+            
+            return {
+                state: 'RUNNING',
+                start,
+                paused: 0,
+                timers: [...action.payload.timers]
+            }
+
         case STOP_TIMERS:
             unschedule(state.timers);
             
             return {
                 state: 'STOPPED',
                 start: 0,
+                paused: 0,
                 timers: []
             }
         case PAUSE_TIMERS:
@@ -100,6 +118,7 @@ const scheduleReducer = (
 
             return {
                 ...state,
+                paused: Date.now(),
                 state: 'PAUSED'
             }
         default:
