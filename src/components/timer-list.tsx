@@ -8,7 +8,7 @@ import DraggableFlatList from "react-native-draggable-flatlist";
 
 import { AntDesign } from '@expo/vector-icons';
 
-import { Layout as Spacing, Colours, Typography } from '../styles';
+import { Colours } from '../styles';
 import { Timer } from '../util/timer';
 
 import { TimerListItem } from './timer-list-item';
