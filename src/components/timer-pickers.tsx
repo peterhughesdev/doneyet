@@ -1,7 +1,6 @@
 import React,  { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TimePicker } from './time-picker';
-
 import { Layout as Spacing } from '../styles';
 import { intervals } from '../util/scheduler';
 
@@ -31,6 +30,6 @@ export const TimerPickers = (props: TimerPickersProps) => {
 const styles = StyleSheet.create({
     pickers: {
         ...Spacing.row,
-        marginBottom: 30,
+        marginBottom: 30
     }
 });

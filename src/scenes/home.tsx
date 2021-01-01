@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { getLabelFromSeconds, getTotalSecondsForTimers, Timer } from '../util/timer';
@@ -20,6 +20,9 @@ import { StartQueueBtn } from '../components/buttons/start-queue-btn';
 import { TimerPickers } from '../components/timer-pickers';
 import { AddQueueBtn } from '../components/buttons/add-queue-btn';
 import { PauseQueueBtn } from '../components/buttons/pause-queue-btn';
+import { useSpring, animated } from 'react-spring/native';
+
+const AnimatedView = animated(View);
 
 export const HomeScreen = () => {
     const timers = useSelector((state: RootState) => state.queue.timers);
@@ -60,13 +63,34 @@ export const HomeScreen = () => {
         dispatch(toggleRepeat(timer));
     }
 
+    const [pickerProps, setPickerProps] = useSpring(() => ({
+        opacity: 1,
+        height: 140
+    }));
+
+    useEffect(() => {
+        if (schedule.running) {
+            setPickerProps({
+                opacity: 0,
+                height: 0
+            });
+        } else {
+            setPickerProps({
+                opacity: 1,
+                height: 140
+            });
+        }
+    }, [schedule.running]);
+
     return (
         <View style={styles.container}>
             <BackgroundGradient />
 
             <SceneTitle title='Done Yet.' subtitle='Designed and built by Jasmine and Peter' />
             
-            <TimerPickers onChange={setPendingTimer} />
+            <AnimatedView style={[styles.pickers, pickerProps]}>
+                <TimerPickers onChange={setPendingTimer} />
+            </AnimatedView>
 
             <View style={styles.buttons}>
                 {schedule.running ?
@@ -96,10 +120,13 @@ const styles = StyleSheet.create({
         ...Spacing.vertical,
         paddingTop: 35,
     },
+    pickers: {
+        
+    },
     buttons: {
         ...Spacing.row,
         justifyContent: 'space-between',
-        marginTop: 160,
+        marginTop: 20,
     },
     queue: {
         ...Spacing.fullWidth,
