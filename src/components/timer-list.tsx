@@ -13,7 +13,6 @@ import { Timer } from '../util/timer';
 
 import { TimerListItem } from './timer-list-item';
 
-
 interface TimerListProp {
     timers: Timer[],
     scheduled: boolean,
@@ -23,7 +22,6 @@ interface TimerListProp {
 }
 
 export const TimerList = (props: TimerListProp) => {
-
     const renderUnderlayLeft = ({ item, percentOpen } : { item: any, percentOpen: any }) => (
         <Animated.View style={[styles.row, styles.underlayLeft, { opacity: percentOpen }]} >
           <TouchableOpacity onPressOut={() => props.deleteTimer(item.item)}>

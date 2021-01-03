@@ -54,7 +54,31 @@ const iterateIntervalSequence = (interval: number, callback: (timeout: number, r
     }
 }
 
-export function schedule(timers: Timer[], skip: number = 0) {
+/**
+ * Given a set of timers and a timestamp from when a schedule was begun,
+ * find the currently active timer.
+ * 
+ * @param timers set of timers to identify
+ * @param start the time the schedule was started
+ * @param elapsed time already elapsed within the schedule
+ */
+export function currentTimer(timers: Timer[], start: number, elapsed: number) {
+    const offset = elapsed + Math.floor((Date.now() - start) / 1000);
+
+    let id = 0;
+
+    timers.reduce((accumulated, timer, _id) => {
+        if (offset >= accumulated && offset <= accumulated + timer.time) {
+            id = _id;
+        }
+
+        return accumulated + timer.time;
+    }, 0);
+
+    return timers[id];
+}
+
+export function schedule(timers: Timer[], elapsed: number = 0) {
     const totalTime = getTotalSecondsForTimers(timers);
 
     // Walk through all timers, accumulating the total time all 
@@ -63,15 +87,17 @@ export function schedule(timers: Timer[], skip: number = 0) {
         let offset = accumulated + timer.time;
       
         // If the accumulated time for all timers including this one
-        // is less than the provided skip, don't schedule any notifications.
-        if (skip > offset) {
+        // is less than the provided elapsed time, don't schedule any notifications.
+        if (elapsed > offset) {
             return offset;
         }
 
-        // If the number of seconds to skip puts us in the middle of a timer,
-        // subtract the difference from calculated offset
-        if (skip > accumulated) {
-            offset - (skip - accumulated);
+        // If the number of seconds elapsed puts us in the middle of a timer,
+        // subtract the elapsed time from the current offset.
+        // e.g.:
+        // 30s - (45s - 40s) = 25s
+        if (elapsed > accumulated) {
+            offset = timer.time - (elapsed - accumulated);
         }
 
         const remaining = totalTime - offset;
@@ -91,7 +117,7 @@ export function schedule(timers: Timer[], skip: number = 0) {
 
             return accumulated;
         } else {
-            scheduleNotification(offset - skip, false, title, body);
+            scheduleNotification(offset, false, title, body);
             return offset;
         }
     }, 0);

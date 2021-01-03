@@ -1,24 +1,43 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { useSpring, animated } from 'react-spring/native'
 
 import { Layout as Spacing, Colours, Typography } from '../styles';
-import { getLabel, getLabelFromSeconds } from '../util/timer';
+import { getLabel, getLabelFromSeconds, Timer } from '../util/timer';
 import { useTheme }  from '../util/theme';
 
 import { Ionicons } from  '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { currentTimer } from '../util/scheduler';
+import { useInterval } from '../util/interval';
 
 interface TimerListItemProps {
-    toggleRepeat: any,
-    timer: any,
-    drag: any
+    toggleRepeat: any;
+    timer: Timer;
+    drag: any;
 }
 
 const AnimatedView = animated(View);
 
 export const TimerListItem = (props: TimerListItemProps) => {
+
+    const schedule = useSelector((state: RootState) => state.schedule);
+    const [isActive, setIsActive] = useState<boolean>(false);
+
+    useInterval(() => {
+        const active = currentTimer(schedule.timers, schedule.start, schedule.elapsed);
+        setIsActive(active && active.id === props.timer.id);
+    }, schedule.state === 'RUNNING' ? 1000 : null); 
+
+    useEffect(() => {
+        if (schedule.state === 'STOPPED') {
+            setIsActive(false);
+        }
+    }, [schedule.state]);
+
     const slideFadeIn = useSpring({ opacity: 1, translateY: 0, from: { opacity: 0, translateY: 50 }, config: { tension: 100 }});
     const theme = useTheme();
 
@@ -38,11 +57,11 @@ export const TimerListItem = (props: TimerListItemProps) => {
     const themed = StyleSheet.create({
         queueItem: {
             ...styles.queueItem,
-            backgroundColor: theme.item
+            backgroundColor: isActive ? theme.backgroundTop : theme.item
         },
         queueItemText: {
             ...styles.queueItemText,
-            color: theme.textSecondary
+            color: isActive ? theme.textPrimary : theme.textSecondary
         },
         repeatIconActive: {
             ...styles.repeatIconActive,

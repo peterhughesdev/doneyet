@@ -17,7 +17,7 @@ export type ScheduleRunningState = typeof RUNNING | typeof STOPPED | typeof PAUS
 export interface ScheduleState {
     state: ScheduleRunningState;
     start: number;
-    paused: number;
+    elapsed: number;
     timers: Timer[];
 }
 

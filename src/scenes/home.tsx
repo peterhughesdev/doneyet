@@ -37,7 +37,7 @@ export const HomeScreen = () => {
     const totalQueuedTimeLabel = getLabelFromSeconds(totalQueuedTimeInSeconds);
 
     useInterval(() => {
-        const elapsed = Math.floor((Date.now() - schedule.start) / 1000);
+        const elapsed = schedule.elapsed + Math.floor((Date.now() - schedule.start) / 1000);
         const remaining = Math.max(totalScheduledTime - elapsed, 0);
 
         setRemainingScheduledTime(remaining);
